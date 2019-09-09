@@ -9,6 +9,8 @@ default: &default
 
 development:
   <<: *default
+  url: <%= ENV["DATABASE_URL"] %>
+  host: localhost
   database: transition_development
 
 # Warning: The database defined as "test" will be erased and
@@ -16,8 +18,10 @@ development:
 # Do not set this db to the same as development or production.
 test: &test
   <<: *default
-  database: transition_test<%= ENV['TEST_ENV_NUMBER'] %>
-  url: <%= ENV["DATABASE_URL"].try(:sub, /([-_]development)?$/, "_test#{ENV['TEST_ENV_NUMBER']}") %>
+  url: <%= ENV["DATABASE_URL"] %>
+  host: localhost
+  username: transition
+  database: transition_test
   variables:
     work_mem: 1MB
 
