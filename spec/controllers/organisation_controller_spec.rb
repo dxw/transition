@@ -18,7 +18,7 @@ describe OrganisationsController do
   describe '#show' do
     let(:organisation) { create :organisation }
     it 'sets the organisation' do
-      get :show, id: organisation.whitehall_slug
+      get :show, params: { id: organisation.whitehall_slug }
       expect(assigns(:organisation)).to eq(organisation)
     end
   end
@@ -33,7 +33,7 @@ describe OrganisationsController do
   describe '#edit' do
     let(:organisation) { create :organisation }
     it 'loads the organisation for editing' do
-      get :edit, id: organisation.whitehall_slug
+      get :edit, params: { id: organisation.whitehall_slug }
       expect(assigns(:organisation)).to eq(organisation)
     end
   end
@@ -47,7 +47,8 @@ describe OrganisationsController do
         whitehall_type: 'Site',
         abbreviation: 'SEC'
       }
-      expect { post :create, organisation: params }.to change { Organisation.all.count }.by(1)
+      expect { post :create, params: { organisation: params } }
+        .to change { Organisation.all.count }.by(1)
     end
   end
 
@@ -62,7 +63,7 @@ describe OrganisationsController do
         whitehall_type: 'Site',
         abbreviation: 'SEC'
       }
-      patch :update, id: organisation.whitehall_slug, organisation: params
+      patch :update, params: { id: organisation.whitehall_slug, organisation: params }
       organisation.reload
       expect(organisation.title).to eq(params[:title])
       expect(organisation.homepage).to eq(params[:homepage])

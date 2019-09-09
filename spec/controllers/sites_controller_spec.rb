@@ -41,7 +41,7 @@ describe SitesController do
     describe '#show' do
       it 'loads the site' do
         site = create :site
-        get :show, id: site.abbr
+        get :show, params: { id: site.abbr }
         expect(assigns(:site)).to eq(site)
       end
     end
@@ -50,7 +50,7 @@ describe SitesController do
       let(:organisation) { create :organisation }
 
       before do
-        get :new, organisation: organisation.whitehall_slug
+        get :new, params: { organisation: organisation.whitehall_slug }
       end
 
       it 'assigns a new organisation' do
@@ -76,7 +76,8 @@ describe SitesController do
           homepage_title: 'Deparment of M',
         }
 
-        expect { post :create, site: params, host_list: 'localhost' }.to change { Site.all.count }.by(1)
+        expect { post :create, params: { site: params, host_list: 'localhost' } }
+          .to change { Site.all.count }.by(1)
         site = Site.find_by(abbr: 'MOJ')
         expect(site.launch_date).to eq(params[:launch_date])
         expect(site.abbr).to eq(params[:abbr])
@@ -105,7 +106,7 @@ describe SitesController do
           homepage_title: 'Deparment of M',
         }
 
-        patch :update, id: site.abbr, site: params
+        patch :update, params: { id: site.abbr, site: params }
         site.reload
         expect(site.launch_date).to eq(params[:launch_date])
         expect(site.abbr).to eq(params[:abbr])
