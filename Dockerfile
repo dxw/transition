@@ -61,6 +61,7 @@ ENV GOVUK_APP_DOMAIN=${GOVUK_APP_DOMAIN:-dev.gov.uk}
 # precompile assets for production
 RUN \
   RAILS_ENV=production \
+  SECRET_KEY_BASE="super secret" \
   bin/rails DATABASE_URL=postgresql:does_not_exist assets:precompile
 
 EXPOSE 3000
