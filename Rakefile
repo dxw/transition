@@ -7,4 +7,4 @@ require File.expand_path("config/application", __dir__)
 Rails.application.load_tasks
 
 Rake::Task[:default].clear
-task default: [:lint, :spec, :cucumber, "jasmine:ci", :lint, :check_for_bad_time_handling]
+task default: [:lint, :spec, :cucumber, "jasmine:ci"]
