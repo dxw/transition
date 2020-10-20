@@ -105,11 +105,11 @@ describe Transition::Import::Hits do
       end
     end
 
-    context 'import from a file with invalid characters', testing_before_all: true do
-      it 'should filter out bad utf-8 properly' do
-        expect do
-          Transition::Import::Hits.from_tsv!('spec/fixtures/hits/invalid_utf8.tsv')
-        end.not_to(raise_error)
+    context "import from a file with invalid characters", testing_before_all: true do
+      it "should filter out bad utf-8 properly" do
+        expect {
+          Transition::Import::Hits.from_tsv!("spec/fixtures/hits/invalid_utf8.tsv")
+        }.not_to(raise_error)
       end
     end
 
@@ -228,39 +228,39 @@ describe Transition::Import::Hits do
     end
   end
 
-  describe '.from_iis_w3c!' do
-    context 'when there is a host that matches the IP address' do
-      it 'imports the data' do
-        host = create :host, hostname: 'dev.infohub.ukri.org'
+  describe ".from_iis_w3c!" do
+    context "when there is a host that matches the IP address" do
+      it "imports the data" do
+        host = create :host, hostname: "dev.infohub.ukri.org"
 
-        Transition::Import::Hits.from_iis_w3c!('spec/fixtures/hits/iis_w3c_example.log')
+        Transition::Import::Hits.from_iis_w3c!("spec/fixtures/hits/iis_w3c_example.log")
 
         expect(Hit.count).to eql(1)
         hit = Hit.first
-        expect(hit.path).to eql('/news/')
+        expect(hit.path).to eql("/news/")
         expect(hit.count).to eql(3)
         expect(hit.hit_on).to eql(Date.new(2019, 9, 17))
         expect(hit.host_id).to eql(host.id)
       end
     end
 
-    context 'when there is no matching host' do
-      it 'does not create a hit record' do
-        Transition::Import::Hits.from_iis_w3c!('spec/fixtures/hits/iis_w3c_example.log')
+    context "when there is no matching host" do
+      it "does not create a hit record" do
+        Transition::Import::Hits.from_iis_w3c!("spec/fixtures/hits/iis_w3c_example.log")
         expect(Hit.count).to eql(0)
       end
     end
 
-    context 'when the file is unexpected' do
-      it 'does not create a hit record' do
-        Transition::Import::Hits.from_iis_w3c!('spec/fixtures/hits/unexpected_log_format.log')
+    context "when the file is unexpected" do
+      it "does not create a hit record" do
+        Transition::Import::Hits.from_iis_w3c!("spec/fixtures/hits/unexpected_log_format.log")
         expect(Hit.count).to eql(0)
       end
     end
 
-    context 'when the file is not parseable' do
-      it 'does not create a hit record' do
-        Transition::Import::Hits.from_iis_w3c!('spec/fixtures/hits/unknown_log_format.log')
+    context "when the file is not parseable" do
+      it "does not create a hit record" do
+        Transition::Import::Hits.from_iis_w3c!("spec/fixtures/hits/unknown_log_format.log")
         expect(Hit.count).to eql(0)
       end
     end

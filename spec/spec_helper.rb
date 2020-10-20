@@ -16,12 +16,12 @@ RSpec.configure do |config|
   Kernel.srand config.seed
 end
 
-require 'pry'
-require 'sidekiq/testing'
-Dir[File.expand_path('../app/workers/**/*_worker.rb', File.dirname(__FILE__))].each do |file|
+require "pry"
+require "sidekiq/testing"
+Dir[File.expand_path("../app/workers/**/*_worker.rb", File.dirname(__FILE__))].sort.each do |file|
   require file
 end
 
-ENV["RAILS_ENV"] ||= 'test'
-require File.expand_path('../config/environment', __dir__)
-require 'rspec/rails'
+ENV["RAILS_ENV"] ||= "test"
+require File.expand_path("../config/environment", __dir__)
+require "rspec/rails"

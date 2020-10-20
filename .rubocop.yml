@@ -6,3 +6,11 @@ inherit_gem:
 inherit_mode:
   merge:
     - Exclude
+
+Rails/Output:
+  Exclude:
+    - app/workers/ingest_w3c_log_worker.rb
+
+Lint/AmbiguousBlockAssociation:
+  Exclude:
+    - spec/workers/ingest_w3c_log_worker_spec.rb

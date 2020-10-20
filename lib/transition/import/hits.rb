@@ -114,7 +114,7 @@ module Transition
             load_data_query,
             import_record,
             content_hash,
-            File.open(absolute_filename, "r").read.scrub.gsub("\u0000",""),
+            File.open(absolute_filename, "r").read.scrub.gsub("\u0000", ""),
           )
         end
       end
@@ -128,11 +128,11 @@ module Transition
       end
 
       def self.from_iis_w3c!(filename)
-        parsed_log_lines = self.parse_iis_w3c_log_file(filename: filename)
+        parsed_log_lines = parse_iis_w3c_log_file(filename: filename)
 
         # Create a temporary CSV file from the parsed CLF log lines
-        new_csv_filename = 'data/temp_clf_conversion.csv'
-        ::CSV.open(new_csv_filename, 'wb', force_quotes: true) do |csv|
+        new_csv_filename = "data/temp_clf_conversion.csv"
+        ::CSV.open(new_csv_filename, "wb", force_quotes: true) do |csv|
           csv << %w[date count status host url]
           parsed_log_lines.each do |parsed_log_line|
             csv << parsed_log_line
@@ -140,7 +140,7 @@ module Transition
         end
 
         # Send to the existing ingest process
-        self.from_file!(LOAD_CSV_DATA, new_csv_filename)
+        from_file!(LOAD_CSV_DATA, new_csv_filename)
       end
 
       def self.from_mask!(filemask)
@@ -165,7 +165,7 @@ module Transition
         absolute_filename = File.expand_path(filename, Rails.root)
 
         parsed_log_lines = []
-        File.open(absolute_filename, 'r') do |file|
+        File.open(absolute_filename, "r") do |file|
           file.each_line do |combined_log_line|
             log = IISAccessLogParser::Entry.from_string(combined_log_line)
 
@@ -174,14 +174,14 @@ module Transition
               0, # Set this position in the array for updating the count later
               log.status,
               log.host,
-              log.url
+              log.url,
             ]
 
             parsed_log_lines << parsed_log_line unless parsed_log_line.any?(nil)
           end
         end
 
-        grouped_log_lines = parsed_log_lines.inject(Hash.new(0)) { |h, e| h[e] += 1; h }
+        grouped_log_lines = parsed_log_lines.each_with_object(Hash.new(0)) { |e, h| h[e] += 1; }
         counted_log_lines = grouped_log_lines.map do |log, counter|
           log[1] = counter.to_s
           log

@@ -3,10 +3,6 @@ class ApplicationController < ActionController::Base
   before_action :authenticate
   before_action :set_paper_trail_whodunnit
 
-  private def authenticate
-    warden.authenticate!
-  end
-
   helper_method :current_user
   def current_user
     warden.user || NilUser.new
@@ -43,6 +39,10 @@ class ApplicationController < ActionController::Base
   end
 
 private
+
+  def authenticate
+    warden.authenticate!
+  end
 
   def verify_authenticity_token
     raise ActionController::InvalidAuthenticityToken unless verified_request?

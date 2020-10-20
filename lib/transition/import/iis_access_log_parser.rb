@@ -1,6 +1,6 @@
-require 'ip'
-require 'time'
-require 'ostruct'
+require "ip"
+require "time"
+require "ostruct"
 
 # Original code (MIT) can be found here https://github.com/jpastuszek/iis-access-log-parser
 # Deciding not to fork it and host it on a gemserver given this specific
@@ -16,8 +16,8 @@ module Transition
         @fields = fields
       end
 
-    #Fields: date time s-ip cs-method cs-uri-stem cs-uri-query s-port cs-username c-ip cs(User-Agent) cs(Referer) cs-host sc-status sc-substatus sc-win32-status time-taken
-    #Entry = Entry.new
+      # Fields: date time s-ip cs-method cs-uri-stem cs-uri-query s-port cs-username c-ip cs(User-Agent) cs(Referer) cs-host sc-status sc-substatus sc-win32-status time-taken
+      # Entry = Entry.new
 
       class Entry < OpenStruct
         def self.from_string(line)
@@ -33,9 +33,9 @@ module Transition
           end
           raise ArgumentError, "bad format: '#{line}'" unless x
 
-          mapping[:date] = Time.zone.parse(mapping[:date] + ' UTC') unless mapping[:date] == nil
-          mapping[:server_ip] = IP.new(mapping[:server_ip]) unless mapping[:server_ip] == nil
-          mapping[:client_ip] = IP.new(mapping[:client_ip]) unless mapping[:client_ip] == nil
+          mapping[:date] = Time.zone.parse(mapping[:date] + " UTC") unless mapping[:date].nil?
+          mapping[:server_ip] = IP.new(mapping[:server_ip]) unless mapping[:server_ip].nil?
+          mapping[:client_ip] = IP.new(mapping[:client_ip]) unless mapping[:client_ip].nil?
 
           mapping[:port] = mapping[:port].to_i
           mapping[:status] = mapping[:status].to_i
@@ -44,21 +44,21 @@ module Transition
 
           mapping[:time_taken] = mapping[:time_taken].to_f / 1000
 
-          mapping[:query] = nil if mapping[:query] == '-'
-          mapping[:username] = nil if mapping[:username] == '-'
-          mapping[:user_agent] = nil if mapping[:user_agent] == '-'
+          mapping[:query] = nil if mapping[:query] == "-"
+          mapping[:username] = nil if mapping[:username] == "-"
+          mapping[:user_agent] = nil if mapping[:user_agent] == "-"
 
-          mapping[:user_agent].tr!('+', ' ') unless mapping[:user_agent].nil?
+          mapping[:user_agent].tr!("+", " ") unless mapping[:user_agent].nil?
 
-          mapping[:user_referer] = nil if mapping[:user_referer] == '-'
+          mapping[:user_referer] = nil if mapping[:user_referer] == "-"
 
-          self.new(mapping)
+          new(mapping)
         end
       end
 
       def self.from_file(log_file)
-        File.open(log_file, 'r') do |io|
-          self.new(io) do |entry|
+        File.open(log_file, "r") do |io|
+          new(io) do |entry|
             yield entry
           end
         end
@@ -66,7 +66,7 @@ module Transition
 
       def initialize(io)
         io.each_line do |line|
-          next if line[0, 1] == '#'
+          next if line[0, 1] == "#"
 
           yield Entry.from_string(line)
         end
