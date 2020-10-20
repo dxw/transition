@@ -1,13 +1,13 @@
-require 'rails_helper'
+require "rails_helper"
 
 describe OrganisationsController do
   before do
     login_as_stub_user
   end
 
-  describe '#index' do
-    let(:organisation_z) { create :organisation, :with_site, title: 'Zzzzzz' }
-    let(:organisation_a) { create :organisation, :with_site, title: 'Aaaaaa' }
+  describe "#index" do
+    let!(:organisation_z) { create :organisation, :with_site, title: "Zzzzzz" }
+    let!(:organisation_a) { create :organisation, :with_site, title: "Aaaaaa" }
 
     it 'orders organisations alphabetically' do
       get :index

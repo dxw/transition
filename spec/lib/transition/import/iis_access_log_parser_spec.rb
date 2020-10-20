@@ -23,7 +23,7 @@ describe Transition::Import::IISAccessLogParser::Entry do
     e.date.hour.should eql 15
     e.date.min.should eql 11
     e.date.sec.should eql 25
-    e.date.zone.should eql 'GMT'
+    e.date.zone.should eql "UTC"
 
     e.server_ip.should be_kind_of IP::V4
     e.client_ip.should be_kind_of IP::V4

@@ -1,4 +1,4 @@
-require 'transition/import/console_job_wrapper'
+require "transition/import/console_job_wrapper"
 
 module Transition
   module Import
@@ -20,7 +20,7 @@ module Transition
                 console_puts "WARN: skipping site with abbr '#{site.abbr}' - already set to #{@new_precompute_value}"
               else
                 start "Setting #{site.abbr} precompute_all_hits_view to #{@new_precompute_value}" do
-                  site.update_attribute(:precompute_all_hits_view, @new_precompute_value)
+                  site.update!(precompute_all_hits_view: @new_precompute_value)
                   @updated += 1
                 end
               end

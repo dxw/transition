@@ -1,6 +1,6 @@
 module HitsHelper
   def any_totals_for?(points_categories)
-    points_categories && points_categories.find { |c| c.points && !c.points.empty? }
+    points_categories && points_categories.find { |c| c.points.present? }
   end
 
   def no_hits_for_any?(sections)
@@ -35,12 +35,12 @@ module HitsHelper
     transition_date = site && site.transition_status == :live ? site.launch_date : nil
     dates = {}
     cols  = [
-        { label: 'Date', type: 'date' },
-        { label: 'Transition date line', type: 'string', p: { role: 'annotation' } }
-      ]
+      { label: "Date", type: "date" },
+      { label: "Transition date line", type: "string", p: { role: "annotation" } },
+    ]
 
     categories.each do |category|
-      cols << { label: category.title, type: 'number' }
+      cols << { label: category.title, type: "number" }
 
       category.points.each do |total|
         date                = dates[total.total_on] || (dates[total.total_on] = {})
@@ -52,13 +52,13 @@ module HitsHelper
     dates.each_pair do |date, category_counts|
       rows << {
         c: [
-             { v: "Date(#{date.year}, #{date.month - 1}, #{date.day})" },
-             { v: date == transition_date ? 'Transition' : nil },
-             *categories.map do |c|
-               count_for_category = category_counts[c.name] || 0
-               { v: count_for_category, f: number_with_delimiter(count_for_category) }
-             end
-           ]
+          { v: "Date(#{date.year}, #{date.month - 1}, #{date.day})" },
+          { v: date == transition_date ? "Transition" : nil },
+          *categories.map do |c|
+            count_for_category = category_counts[c.name] || 0
+            { v: count_for_category, f: number_with_delimiter(count_for_category) }
+          end,
+        ],
       }
     end
 
@@ -71,9 +71,9 @@ module HitsHelper
 
   def http_status_for(mapping)
     if mapping.redirect?
-      '301'
+      "301"
     elsif mapping.archive? || mapping.unresolved?
-      '410'
+      "410"
     end
   end
 
@@ -84,9 +84,9 @@ module HitsHelper
 
   def hit_is_now(hit)
     if hit.archive? && hit.mapping.redirect?
-      'was archived, now redirecting'
+      "was archived, now redirecting"
     elsif hit.redirect? && hit.mapping.archive?
-      'was redirecting, now archived'
+      "was redirecting, now archived"
     elsif hit.error? && hit.mapping.redirect?
       '<span class="middle-grey">Error fixed</span> &mdash; now redirecting'.html_safe
     elsif hit.error? && hit.mapping.archive?
@@ -100,28 +100,28 @@ module HitsHelper
 
   ##
   # Send the correct routing message for the current category and period
-  def current_category_in_period_path(period)
-    if @site
-      current_category_of_hits_for_specific_site(period)
+  def current_category_in_period_path(site, period)
+    if site
+      current_category_of_hits_for_specific_site(site, period)
     else
       current_category_of_hits_for_universal_analytics(period)
     end
   end
 
   def viewing_all_hits?
-    action_name == 'index'
+    action_name == "index"
   end
 
 private
 
-  def current_category_of_hits_for_specific_site(period)
+  def current_category_of_hits_for_specific_site(site, period)
     # Hits for a specific site
     if params[:category]
-      category_site_hits_path(@site, category: params[:category], period: period.query_slug)
+      category_site_hits_path(site, category: params[:category], period: period.query_slug)
     elsif viewing_all_hits?
-      site_hits_path(@site, period: period.query_slug)
+      site_hits_path(site, period: period.query_slug)
     else
-      summary_site_hits_path(@site, period: period.query_slug)
+      summary_site_hits_path(site, period: period.query_slug)
     end
   end
 

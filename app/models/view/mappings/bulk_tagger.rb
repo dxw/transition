@@ -1,6 +1,4 @@
-#encoding: utf-8
-
-require 'set'
+require "set"
 
 module View
   module Mappings
@@ -9,7 +7,7 @@ module View
     # controllers full of fields.
     class BulkTagger < BulkEditor
       def params_errors
-        I18n.t('mappings.bulk.edit.mappings_empty') if mappings.empty?
+        I18n.t("mappings.bulk.edit.mappings_empty") if mappings.empty?
       end
 
       def would_fail?
@@ -66,7 +64,7 @@ module View
       end
 
       def glue
-        delimiter + ' '
+        delimiter + " "
       end
     end
   end

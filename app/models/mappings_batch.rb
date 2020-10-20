@@ -1,14 +1,14 @@
-class MappingsBatch < ActiveRecord::Base
+class MappingsBatch < ApplicationRecord
   self.inheritance_column = :klass
 
-  FINISHED_STATES = %w(succeeded failed).freeze
-  PROCESSING_STATES = %w(unqueued queued processing) + FINISHED_STATES
+  FINISHED_STATES = %w[succeeded failed].freeze
+  PROCESSING_STATES = %w[unqueued queued processing] + FINISHED_STATES
 
   attr_accessor :paths # a virtual attribute to then use for creating entries
 
   belongs_to :user
   belongs_to :site
-  has_many :entries, foreign_key: :mappings_batch_id, class_name: 'MappingsBatchEntry', dependent: :delete_all
+  has_many :entries, class_name: "MappingsBatchEntry", dependent: :delete_all
 
   validates :user, presence: true
   validates :site, presence: true
@@ -29,11 +29,11 @@ class MappingsBatch < ActiveRecord::Base
   end
 
   def succeeded?
-    state == 'succeeded'
+    state == "succeeded"
   end
 
   def failed?
-    state == 'failed'
+    state == "failed"
   end
 
   def process
@@ -47,8 +47,8 @@ class MappingsBatch < ActiveRecord::Base
         mapping.type = entry.type
         mapping.new_url = entry.new_url
         mapping.archive_url = entry.archive_url
-        mapping.tag_list = [mapping.tag_list, tag_list].join(',')
-        mapping.save
+        mapping.tag_list = [mapping.tag_list, tag_list].join(",")
+        mapping.save!
 
         entry.update_column(:processed, true)
       end
@@ -56,11 +56,11 @@ class MappingsBatch < ActiveRecord::Base
   end
 
   def with_state_tracking
-    update_column(:state, 'processing')
+    update_column(:state, "processing")
     yield
-    update_column(:state, 'succeeded')
+    update_column(:state, "succeeded")
   rescue StandardError
-    update_column(:state, 'failed')
+    update_column(:state, "failed")
     raise
   end
 end

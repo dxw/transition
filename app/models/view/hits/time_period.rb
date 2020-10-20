@@ -17,22 +17,21 @@ module View
       end
 
       def self.slugize(title)
-        title.downcase.tr(' ', '-')
+        title.downcase.tr(" ", "-")
       end
 
       DATE_RANGE = /[0-9]{8}(?:-[0-9]{8})?/.freeze
-      DEFAULT_SLUG = 'last-30-days'.freeze
+      DEFAULT_SLUG = "last-30-days".freeze
 
       PERIODS_BY_SLUG = {
-        'Yesterday'       => lambda { Time.zone.yesterday..Time.zone.today },
-        'Last seven days' => lambda { 7.days.ago.to_date..Time.zone.today },
-        'Last 30 days'    => lambda { 30.days.ago.to_date..Time.zone.today },
-        'All time'        => lambda { 100.years.ago.to_date..Time.zone.today }
-      }.inject({}) do |hash, arr|
+        "Yesterday" => -> { Time.zone.yesterday..Time.zone.today },
+        "Last seven days" => -> { 7.days.ago.to_date..Time.zone.today },
+        "Last 30 days" => -> { 30.days.ago.to_date..Time.zone.today },
+        "All time" => -> { 100.years.ago.to_date..Time.zone.today },
+      }.each_with_object({}) do |arr, hash|
         title, range_proc = *arr
         slug = TimePeriod.slugize(title)
         hash[slug] = TimePeriod.new(slug, title, range_proc)
-        hash
       end
 
       def title
@@ -42,12 +41,12 @@ module View
       def formatted_date
         dates = [start_date]
         dates << end_date unless start_date == end_date
-        dates.map { |date| date.strftime('%-d %b %Y') }.join(' - ')
+        dates.map { |date| date.strftime("%-d %b %Y") }.join(" - ")
       end
 
       def self.all(options = { exclude_all_time: false })
         PERIODS_BY_SLUG.values.reject do |p|
-          options[:exclude_all_time] && p.slug == 'all-time'
+          options[:exclude_all_time] && p.slug == "all-time"
         end
       end
 
@@ -60,11 +59,11 @@ module View
       end
 
       def self.parse(range_str)
-        dates = range_str.split('-')[0..1].map { |s| Date.parse(s) }
+        dates = range_str.split("-")[0..1].map { |s| Date.parse(s) }
         dates[1] ||= dates[0]
-        raise ArgumentError, 'Invalid range, start date should be less than end date' if dates.first > dates.last
+        raise ArgumentError, "Invalid range, start date should be less than end date" if dates.first > dates.last
 
-        TimePeriod.new(range_str, nil, lambda { Range.new(dates.first, dates.last) })
+        TimePeriod.new(range_str, nil, -> { Range.new(dates.first, dates.last) })
       end
 
       def query_slug
@@ -88,7 +87,7 @@ module View
       end
 
       def no_content
-        slug == 'all-time' ? 'yet' : 'in this time period'
+        slug == "all-time" ? "yet" : "in this time period"
       end
     end
   end

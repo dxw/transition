@@ -1,10 +1,8 @@
-require 'pathname'
-require 'transition/import/console_job_wrapper'
-require 'transition/import/postgresql_settings'
-require 'transition/import/hits/ignore'
-require 'transition/import/iis_access_log_parser'
-require 'apache_log/parser'
-require 'csv'
+require "pathname"
+require "services"
+require "transition/import/console_job_wrapper"
+require "transition/import/postgresql_settings"
+require "transition/import/hits/ignore"
 
 module Transition
   module Import
@@ -83,16 +81,16 @@ module Transition
         Services.s3.list_objects(bucket: bucket).each do |resp|
           resp.contents.each do |object|
             start "Importing #{object.key}" do |job|
-              job.skip! and next if object.key.end_with? '.csv.metadata'
+              job.skip! && next if object.key.end_with? ".csv.metadata"
 
-              import_record = self.find_import_record(object.key)
-              job.skip! and next if import_record.content_hash == object.etag
+              import_record = find_import_record(object.key)
+              job.skip! && next if import_record.content_hash == object.etag
 
-              is_tsv = object.key.end_with? '.tsv'
+              is_tsv = object.key.end_with? ".tsv"
               load_data_query = is_tsv ? LOAD_TSV_DATA : LOAD_CSV_DATA
 
               resp = Services.s3.get_object(bucket: bucket, key: object.key)
-              self.from_stream!(
+              from_stream!(
                 load_data_query,
                 import_record,
                 object.etag,
@@ -109,25 +107,24 @@ module Transition
           relative_filename = Pathname.new(absolute_filename).relative_path_from(Rails.root).to_s
           content_hash = Digest::SHA1.hexdigest(File.read(relative_filename))
 
-          import_record = self.find_import_record(relative_filename)
-          job.skip! and next if import_record.content_hash == content_hash
+          import_record = find_import_record(relative_filename)
+          job.skip! && next if import_record.content_hash == content_hash
 
-          self.from_stream!(
+          from_stream!(
             load_data_query,
             import_record,
             content_hash,
-            # Read file, remove invalid unicode and null characters as postgres doesn't like them
-            File.open(absolute_filename, 'r').read.scrub.gsub("\u0000",""),
+            File.open(absolute_filename, "r").read.scrub.gsub("\u0000",""),
           )
         end
       end
 
       def self.from_tsv!(filename)
-        self.from_file!(LOAD_TSV_DATA, filename)
+        from_file!(LOAD_TSV_DATA, filename)
       end
 
       def self.from_csv!(filename)
-        self.from_file!(LOAD_CSV_DATA, filename)
+        from_file!(LOAD_CSV_DATA, filename)
       end
 
       def self.from_iis_w3c!(filename)
@@ -150,9 +147,9 @@ module Transition
         done = 0
         unchanged = 0
 
-        change_settings('work_mem' => '2GB') do
+        change_settings("work_mem" => "2GB") do
           Dir[File.expand_path(filemask)].each do |filename|
-            is_tsv = File.extname(filename) == '.tsv'
+            is_tsv = File.extname(filename) == ".tsv"
             load_data_query = is_tsv ? LOAD_TSV_DATA : LOAD_CSV_DATA
 
             Hits.from_file!(load_data_query, filename) ? done += 1 : unchanged += 1

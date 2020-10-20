@@ -29,7 +29,7 @@ class User < ActiveRecord::Base
   def own_organisation
     if organisation_content_id
       @_own_organisation ||=
-        Organisation.find_by(content_id: organisation_content_id)
+          Organisation.find_by(content_id: organisation_content_id)
     end
   end
 
@@ -37,7 +37,7 @@ class User < ActiveRecord::Base
     ! is_robot?
   end
 
-private
+  private
 
   def site_is_editable?(site_to_edit)
     site_to_edit.global_type.blank?
@@ -45,8 +45,8 @@ private
 
   def has_permission_to_edit_site?(site_to_edit)
     gds_editor? ||
-      (own_organisation == site_to_edit.organisation) ||
-      site_to_edit.organisation.parent_organisations.include?(own_organisation) ||
-      site_to_edit.extra_organisations.include?(own_organisation)
+        (own_organisation == site_to_edit.organisation) ||
+        site_to_edit.organisation.parent_organisations.include?(own_organisation) ||
+        site_to_edit.extra_organisations.include?(own_organisation)
   end
 end

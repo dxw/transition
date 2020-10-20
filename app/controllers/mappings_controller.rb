@@ -1,5 +1,5 @@
-require 'view/mappings/canonical_filter'
-require './lib/transition/path_or_url.rb'
+require "view/mappings/canonical_filter"
+require "./lib/transition/path_or_url.rb"
 
 class MappingsController < ApplicationController
   include PaperTrail::Rails::Controller
@@ -25,7 +25,7 @@ class MappingsController < ApplicationController
           filename = "#{@site.default_host.hostname} mappings at #{timestamp}.csv"
           send_data data, filename: filename
         else
-          safely_redirect_to_start_point(notice: 'Only admin users can access the CSV export')
+          safely_redirect_to_start_point(notice: "Only admin users can access the CSV export")
         end
       end
     end
@@ -43,32 +43,32 @@ class MappingsController < ApplicationController
     @mapping.attributes = mapping_params[:mapping]
 
     if @mapping.save
-      flash[:success] = 'Mapping saved'
+      flash[:success] = "Mapping saved"
       flash[:saved_mapping_ids] = [@mapping.id]
       flash[:saved_operation] = "update-single"
       safely_redirect_to_start_point
     else
-      render action: 'edit'
+      render action: "edit"
     end
   end
 
   def edit_multiple
-    redirect_to(bulk_edit.return_path, notice: bulk_edit.params_errors) and return if bulk_edit.params_invalid?
+    redirect_to(bulk_edit.return_path, notice: bulk_edit.params_errors) && return if bulk_edit.params_invalid?
 
     if request.xhr?
-      render 'edit_multiple_modal', layout: nil
+      render "edit_multiple_modal", layout: nil
     end
   end
 
   def update_multiple
-    redirect_to(bulk_edit.return_path, notice: bulk_edit.params_errors) and return if bulk_edit.params_invalid?
+    redirect_to(bulk_edit.return_path, notice: bulk_edit.params_errors) && return if bulk_edit.params_invalid?
 
     if bulk_edit.would_fail?
       if bulk_edit.would_fail_on_new_url?
-        render(action: 'edit_multiple') and return
+        render(action: "edit_multiple") && return
       else
-        flash[:danger] = 'Validation failed'
-        redirect_to(bulk_edit.return_path) and return
+        flash[:danger] = "Validation failed"
+        redirect_to(bulk_edit.return_path) && return
       end
     end
 
@@ -76,8 +76,8 @@ class MappingsController < ApplicationController
 
     if bulk_edit.failures?
       @mappings = bulk_edit.failures
-      flash[:notice] = 'The following mappings could not be updated'
-      render action: 'edit_multiple'
+      flash[:notice] = "The following mappings could not be updated"
+      render action: "edit_multiple"
     else
       flash[:success] = bulk_edit.success_message
       flash[:saved_mapping_ids] = bulk_edit.mappings.map(&:id)
@@ -88,13 +88,13 @@ class MappingsController < ApplicationController
 
   def find_global
     # This allows finding a mapping without knowing the site first.
-    render_error(400) and return unless params[:url].present?
+    render_error(400) && return if params[:url].blank?
 
     # Strip leading and trailing whitespace before any processing.
     stripped_url = params[:url].strip
 
     url = if !::Transition::PathOrUrl.starts_with_http_scheme?(stripped_url)
-            'http://' + stripped_url # Add a dummy scheme
+            "http://" + stripped_url # Add a dummy scheme
           else
             stripped_url
           end
@@ -102,15 +102,17 @@ class MappingsController < ApplicationController
     begin
       url = Addressable::URI.parse(url)
     rescue Addressable::URI::InvalidURIError
-      render_error(400) and return
+      render_error(400) && (return)
     end
 
     url.host = Host.canonical_hostname(url.host)
     site = Host.where(hostname: url.host).first.try(:site)
     unless site
-      render_error(404,
-                   header: 'Unknown site',
-                   body:  "#{url.host} isn't configured in Transition yet.")
+      render_error(
+        404,
+        header: "Unknown site",
+        body: "#{url.host} isn't configured in Transition yet. To add this site to Transition, please contact your Proposition Manager.",
+      )
       return
     end
 
@@ -127,11 +129,11 @@ class MappingsController < ApplicationController
     path = @site.canonical_path(params[:path])
 
     if path.empty?
-      notice = t('mappings.not_possible_to_edit_homepage_mapping')
+      notice = t("mappings.not_possible_to_edit_homepage_mapping")
       return redirect_to back_or_mappings_index, notice: notice
     end
 
-    mapping = @site.mappings.find_by_path(path)
+    mapping = @site.mappings.find_by(path: path)
     if mapping.present?
       redirect_to edit_site_mapping_path(@site, mapping, return_path: params[:return_path])
     else
@@ -143,13 +145,13 @@ private
 
   def mapping_params
     params.permit(mapping: %i[
-                             type
-                             path
-                             new_url
-                             tag_list
-                             suggested_url
-                             archive_url
-                           ])
+      type
+      path
+      new_url
+      tag_list
+      suggested_url
+      archive_url
+    ])
   end
 
   def site_params
@@ -163,8 +165,8 @@ private
       :tagged,
       :page,
       :sort,
-      :format
-)
+      :format,
+    )
   end
 
   def bulk_edit
@@ -172,11 +174,11 @@ private
   end
 
   def bulk_editor_class
-    params[:operation] == 'tag' ? View::Mappings::BulkTagger : View::Mappings::BulkEditor
+    params[:operation] == "tag" ? View::Mappings::BulkTagger : View::Mappings::BulkEditor
   end
 
   def back_or_mappings_index
-    referer = request.env['HTTP_REFERER']
+    referer = request.env["HTTP_REFERER"]
     if referer && Addressable::URI.parse(referer).host == request.host
       referer
     else

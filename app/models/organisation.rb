@@ -1,4 +1,4 @@
-class Organisation < ActiveRecord::Base
+class Organisation < ApplicationRecord
   has_many :child_organisational_relationships,
            foreign_key: :parent_organisation_id,
            class_name: "OrganisationalRelationship"
@@ -12,33 +12,55 @@ class Organisation < ActiveRecord::Base
            through: :parent_organisational_relationships
 
   has_and_belongs_to_many :extra_sites,
-                          join_table: 'organisations_sites',
-                          class_name: 'Site'
+                          join_table: "organisations_sites",
+                          class_name: "Site"
 
   has_many :sites
   has_many :hosts, through: :sites
   has_many :mappings, through: :sites
 
-  validates_presence_of :whitehall_slug
-  validates_uniqueness_of :whitehall_slug
-  validates_presence_of :title
-  validates_presence_of :content_id
+  validates :whitehall_slug, presence: true
+  validates :whitehall_slug, uniqueness: true
+  validates :title, presence: true
+  validates :content_id, presence: true
+
+  # We have two ways of joining a site to an org:
+  # 1. By the site's FK relationship to organisations
+  # 2. Through the many-to-many organisations_sites
+  #
+  # UNION these two ways in an INNER JOIN to pretend that the FK relationship
+  # is in fact a row in organisations_sites.
+  scope :with_sites,
+        lambda {
+          select("organisations.*, COUNT(*) as site_count")
+          .joins('
+      INNER JOIN (
+        SELECT organisation_id, site_id FROM organisations_sites
+        UNION
+        SELECT s.organisation_id, s.id FROM sites s
+      ) AS organisations_sites ON organisations_sites.organisation_id = organisations.id
+    ')
+          .joins("INNER JOIN sites ON sites.id = organisations_sites.site_id")
+          .group("organisations.id") # Postgres will accept a group by primary key
+          .having("COUNT(*) > 0")
+        }
 
   # Returns organisations ordered by descending error count across
   # all their sites.
-  scope :leaderboard, -> {
-    select(
-      <<-POSTGRESQL
+  scope :leaderboard,
+        lambda {
+          select(
+            <<-POSTGRESQL,
         organisations.title,
         organisations.whitehall_slug,
         COUNT(*)                                     AS site_count,
         SUM(site_mapping_counts.mapping_count)       AS mappings_across_sites,
         SUM(unresolved_mapping_counts.mapping_count) AS unresolved_mapping_count,
         SUM(error_counts.error_count)                AS error_count
-      POSTGRESQL
-    ).
-    joins(
-      <<-POSTGRESQL
+            POSTGRESQL
+          )
+          .joins(
+            <<-POSTGRESQL,
         INNER JOIN sites
                ON sites.organisation_id = organisations.id
         LEFT JOIN (SELECT sites.id AS site_id,
@@ -62,11 +84,11 @@ class Organisation < ActiveRecord::Base
                    WHERE  daily_hit_totals.http_status = '404'
                    AND daily_hit_totals.total_on >= (current_date - 30)
                    GROUP BY site_id) AS error_counts ON error_counts.site_id = sites.id
-      POSTGRESQL
-    ).
-    group('organisations.id').
-    order('error_count DESC NULLS LAST')
-  }
+            POSTGRESQL
+          )
+          .group("organisations.id")
+          .order("error_count DESC NULLS LAST")
+        }
 
   def to_param
     whitehall_slug

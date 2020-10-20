@@ -1,4 +1,4 @@
-require 'transition/import/console_job_wrapper'
+require "transition/import/console_job_wrapper"
 
 module Transition
   module Import
@@ -29,7 +29,7 @@ module Transition
 
           destroy_all_hosts
 
-          @site.destroy
+          @site.destroy!
 
           console_puts "Deleted site: #{@site.abbr}"
         end

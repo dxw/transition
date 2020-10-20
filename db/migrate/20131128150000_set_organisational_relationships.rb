@@ -1,11 +1,11 @@
 class SetOrganisationalRelationships < ActiveRecord::Migration
-  class OrganisationalRelationship < ActiveRecord::Base
+  class OrganisationalRelationship < ApplicationRecord
     belongs_to :parent_organisation, class_name: "Organisation"
     belongs_to :child_organisation, class_name: "Organisation"
   end
 
-  class Organisation < ActiveRecord::Base
-    belongs_to :parent, class_name: Organisation, foreign_key: 'parent_id'
+  class Organisation < ApplicationRecord
+    belongs_to :parent, class_name: Organisation, foreign_key: "parent_id"
 
     has_many :child_organisational_relationships,
              foreign_key: :parent_organisation_id,
