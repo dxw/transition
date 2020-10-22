@@ -80,7 +80,7 @@ end
 Then(/^I should see our custom 404 page$/) do
   steps %(
     Then I should see "Page could not be found"
-    And I should see a link to "GOV.UK Transition"
+    And I should see a link to "dxw Transition Tool"
   )
 end
 

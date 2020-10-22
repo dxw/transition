@@ -21,7 +21,7 @@ class SitesController < ApplicationController
   def update
     if @site.update(site_params)
       create_host
-      redirect_to site_path(@site), flash: { success: "Transition date updated" }
+      redirect_to site_path(@site), flash: { success: "Site updated successfully" }
     else
       render :edit, flash: { alert: "We couldn't save your change" }
     end
