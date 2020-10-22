@@ -1,5 +1,6 @@
 require "view/mappings/canonical_filter"
 require "./lib/transition/path_or_url.rb"
+require "./lib/transition/off_site_redirect_checker.rb"
 
 class MappingsController < ApplicationController
   include PaperTrail::Rails::Controller
