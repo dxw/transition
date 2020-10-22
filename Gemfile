@@ -5,6 +5,7 @@ gem "rails", "6.0.3.4"
 gem "activerecord-import"
 gem "activerecord-session_store"
 gem "acts-as-taggable-on"
+gem "apache_log-parser"
 gem "aws-sdk-s3"
 gem "bootstrap-sass"
 gem "gds-api-adapters"
@@ -24,15 +25,15 @@ gem "rails_warden"
 gem "redis-namespace"
 gem "rollbar"
 gem "ruby-ip"
-gem "select2-rails"
+gem "select2-rails", "3.5.7"
 gem "sidekiq"
 gem "sidekiq-cron"
 gem "whenever"
 
 # Custom authentication...
-gem "omniauth"
-gem "omniauth-auth0"
-gem "omniauth-rails_csrf_protection"
+gem "omniauth", "1.9.1"
+gem "omniauth-auth0", "~> 2.2"
+gem "omniauth-rails_csrf_protection", "~> 0.1"
 
 gem "sass"
 gem "sass-rails"
@@ -44,11 +45,14 @@ group :development do
 end
 
 group :test do
+  gem "capybara"
   gem "cucumber-rails", require: false
+  gem "cuprite"
   gem "database_cleaner"
   gem "factory_bot_rails"
   gem "launchy" # Primarily for save_and_open_page support in Capybara
   gem "rails-controller-testing"
+  gem "rspec-sidekiq"
   gem "shoulda-matchers"
   gem "simplecov"
   gem "timecop"
@@ -57,6 +61,8 @@ group :test do
 end
 
 group :development, :test do
+  gem "dotenv-rails"
+  gem "govuk-lint"
   gem "govuk_test"
   gem "jasmine"
   gem "jasmine_selenium_runner"
