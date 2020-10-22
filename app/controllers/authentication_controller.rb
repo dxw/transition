@@ -2,7 +2,11 @@ class AuthenticationController < ApplicationController
   # we don't need to authenticate these requests, they create the authentication
   skip_before_action :authenticate
 
-  def index; end
+  def index
+    if authenticated?
+      redirect_to organisations_path and return
+    end
+  end
 
   def create
     logger.info("OAuth Response Received")
