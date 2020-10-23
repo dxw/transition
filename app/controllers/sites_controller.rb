@@ -7,10 +7,10 @@ class SitesController < ApplicationController
   end
 
   def create
-    @site = Site.create(site_params.merge(tna_timestamp: Time.zone.now))
+    @site = Site.create!(site_params.merge(tna_timestamp: Time.zone.now))
     if @site.valid?
       create_host
-      redirect_to site_path(@site), flash: { success: 'Created a new site!' }
+      redirect_to site_path(@site), flash: { success: "Created a new site!" }
     else
       render :new, flash: { alert: "We couldn't save your site" }
     end
@@ -21,7 +21,7 @@ class SitesController < ApplicationController
   def update
     if @site.update(site_params)
       create_host
-      redirect_to site_path(@site), flash: { success: 'Site updated successfully' }
+      redirect_to site_path(@site), flash: { success: "Site updated successfully" }
     else
       render :edit, flash: { alert: "We couldn't save your change" }
     end
@@ -33,24 +33,8 @@ class SitesController < ApplicationController
     @unresolved_mappings_count = @site.mappings.unresolved.count
   end
 
-  private def create_host
-    hosts = params[:host_names]
-    return unless hosts.present?
-
-    host_list = hosts.split(',')
-    host_list.each do |host|
-      Host.find_or_create_by(hostname: host.strip, site: @site) do |h|
-        h.cname = host.strip
-      end
-    end
-  end
-
-  private def organisation
-    Organisation.find_by_whitehall_slug!(params[:organisation])
-  end
-
   def find_site
-    @site = Site.find_by_abbr!(params[:id])
+    @site = Site.find_by!(abbr: params[:id])
   end
 
   def site_params
@@ -67,9 +51,27 @@ class SitesController < ApplicationController
       :host_names
   end
 
-  private def check_user_is_gds_editor
+private
+
+  def create_host
+    hosts = params[:host_names]
+    return if hosts.blank?
+
+    host_list = hosts.split(",")
+    host_list.each do |host|
+      Host.find_or_create_by(hostname: host.strip, site: @site) do |h|
+        h.cname = host.strip
+      end
+    end
+  end
+
+  def organisation
+    Organisation.find_by_whitehall_slug!(params[:organisation])
+  end
+
+  def check_user_is_gds_editor
     unless current_user.gds_editor?
-      message = 'Only GDS Editors can access that.'
+      message = "Only GDS Editors can access that."
       redirect_to site_path(@site), alert: message
     end
   end

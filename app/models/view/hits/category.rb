@@ -12,10 +12,10 @@ module View
       end
 
       COLORS = {
-        'all'       => '#333',
-        'errors'    => '#e99',
-        'archives'  => '#aaa',
-        'redirects' => '#9e9'
+        "all" => "#333",
+        "errors" => "#e99",
+        "archives" => "#aaa",
+        "redirects" => "#9e9",
       }.freeze
 
       def self.all
@@ -38,15 +38,14 @@ module View
       # Requires at most one total row per day as input - if this assumption is violated,
       # data would be lost and the graph would mislead, so we check for it.
       def insert_zero_totals(totals)
-        compare_dates = lambda { |a, b| a.total_on <=> b.total_on }
+        compare_dates = ->(a, b) { a.total_on <=> b.total_on }
         max_date = totals.max(&compare_dates).try(:total_on)
         min_date = totals.min(&compare_dates).try(:total_on)
 
         return [] if max_date.nil?
 
-        date_totals = (min_date..max_date).inject({}) do |hash, date|
-          hash[date] = nil
-          hash
+        date_totals = (min_date..max_date).index_with do |_date|
+          nil
         end
 
         totals.each do |total|
@@ -57,7 +56,7 @@ module View
           date_totals[total.total_on] = total
         end
 
-        date_totals.keys.each do |date|
+        date_totals.each_key do |date|
           date_totals[date] ||= DailyHitTotal.new do |h|
             h.total_on = date
             h.count = 0
@@ -67,16 +66,14 @@ module View
         date_totals.values
       end
 
-      def to_sym
-        name.to_sym
-      end
+      delegate :to_sym, to: :name
 
       def title
-        name == 'all' ? 'All hits' : name.capitalize
+        name == "all" ? "All hits" : name.capitalize
       end
 
       def plural
-        name == 'all' ? 'hits' : name.pluralize
+        name == "all" ? "hits" : name.pluralize
       end
     end
   end

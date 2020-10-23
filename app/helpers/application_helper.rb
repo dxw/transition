@@ -1,15 +1,15 @@
 module ApplicationHelper
   def crumb_li(title, path, active)
     options = {}
-    options[:class] = 'active' if active
+    options[:class] = "active" if active
 
-    content_tag :li, nil, options do
+    tag.li nil, **options do
       active ? title : link_to(title, path)
     end
   end
 
   def anchor(text, name)
-    content_tag :a, text, id: name, name: name
+    tag.a text, id: name, name: name
   end
 
   def past_first_page?

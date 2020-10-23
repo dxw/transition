@@ -1,77 +1,77 @@
-require 'rails_helper'
+require "rails_helper"
 
 describe OrganisationsController do
   before do
     login_as_stub_user
   end
 
-  describe '#index' do
-    let(:organisation_z) { create :organisation, :with_site, title: 'Zzzzzz' }
-    let(:organisation_a) { create :organisation, :with_site, title: 'Aaaaaa' }
+  describe "#index" do
+    let!(:organisation_z) { create :organisation, :with_site, title: "Zzzzzz" }
+    let!(:organisation_a) { create :organisation, :with_site, title: "Aaaaaa" }
 
-    it 'orders organisations alphabetically' do
+    it "orders organisations alphabetically" do
       get :index
       expect(assigns(:organisations)).to eq([organisation_a, organisation_z])
     end
   end
 
-  describe '#show' do
+  describe "#show" do
     let(:organisation) { create :organisation }
-    it 'sets the organisation' do
+    it "sets the organisation" do
       get :show, params: { id: organisation.whitehall_slug }
       expect(assigns(:organisation)).to eq(organisation)
     end
 
-    context 'when an organisation has a site without hosts' do
+    context "when an organisation has a site without hosts" do
       render_views
       let(:organisation) { create :organisation, sites: create_list(:site_without_host, 1) }
 
-      it 'renders a sensible placeholder name for the site' do
+      it "renders a sensible placeholder name for the site" do
         get :show, params: { id: organisation.whitehall_slug }
         expect(response.body).to include("#{organisation.sites.first.abbr} (no hosts configured)")
       end
     end
   end
 
-  describe '#new' do
-    it 'creates an organisation' do
+  describe "#new" do
+    it "creates an organisation" do
       get :new
       expect(assigns(:organisation)).not_to be_nil
     end
   end
 
-  describe '#edit' do
+  describe "#edit" do
     let(:organisation) { create :organisation }
-    it 'loads the organisation for editing' do
+    it "loads the organisation for editing" do
       get :edit, params: { id: organisation.whitehall_slug }
       expect(assigns(:organisation)).to eq(organisation)
     end
   end
 
-  describe '#create' do
-    it 'creates a new organisation' do
+  describe "#create" do
+    it "creates a new organisation" do
       params = {
-        title: 'New Organisation',
-        homepage: 'http://example.com',
-        whitehall_slug: 'example-com',
-        whitehall_type: 'Site',
-        abbreviation: 'SEC'
+        title: "New Organisation",
+        homepage: "http://example.com",
+        whitehall_slug: "example-com",
+        whitehall_type: "Site",
+        abbreviation: "SEC",
       }
       expect { post :create, params: { organisation: params } }
         .to change { Organisation.all.count }.by(1)
     end
   end
 
-  describe '#edit' do
+  describe "#edit" do
     let(:organisation) { create :organisation }
 
-    it 'updates an organisation' do
+    it "updates an organisation" do
       params = {
-        title: 'Updated Organisation',
-        homepage: 'http://example.com',
-        whitehall_slug: 'example-com',
-        whitehall_type: 'Site',
-        abbreviation: 'SEC'
+        title: "Updated Organisation",
+        homepage: "http://example.com",
+        whitehall_slug: "example-com",
+        whitehall_type: "Site",
+        abbreviation: "SEC",
       }
       patch :update, params: {
         id: organisation.whitehall_slug, organisation: params

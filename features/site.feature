@@ -116,12 +116,12 @@ Scenario: Jumping to a non-existent site
 
 Scenario: Editing a site's transition date as a GDS Editor
   Given I have logged in as a GDS Editor
+  And the date is 29/11/19
   And a site bis exists
   And I visit this site page
   When I edit this site's transition date
   Then I should be redirected to the site dashboard
   And I should see "Site updated successfully"
-  And I should see the new transition date
 
 Scenario: Editing a site's transition date as a non-GDS Editor
   Given I have logged in as a member of DCLG

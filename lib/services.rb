@@ -1,4 +1,4 @@
-require 'aws-sdk-s3'
+require "aws-sdk-s3"
 
 module Services
   def self.s3
@@ -15,18 +15,18 @@ module Services
   end
 
   def self.aws_profile
-    ENV.fetch('AWS_PROFILE', nil)
+    ENV.fetch("AWS_PROFILE", nil)
   end
 
   def self.aws_region
-    ENV.fetch('AWS_REGION', nil)
+    ENV.fetch("AWS_REGION", nil)
   end
 
   def self.access_key_id
-    ENV.fetch('AWS_ACCESS_KEY_ID', nil)
+    ENV.fetch("AWS_ACCESS_KEY_ID", nil)
   end
 
   def self.secret_access_key
-    ENV.fetch('AWS_SECRET_ACCESS_KEY', nil)
+    ENV.fetch("AWS_SECRET_ACCESS_KEY", nil)
   end
 end

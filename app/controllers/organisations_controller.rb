@@ -7,7 +7,7 @@ class OrganisationsController < ApplicationController
   end
 
   def show
-    @organisation = Organisation.find_by_whitehall_slug!(params[:id])
+    @organisation = Organisation.find_by!(whitehall_slug: params[:id])
     sites = @organisation.sites.includes(:hosts)
     extra_sites = @organisation.extra_sites.includes(:hosts)
     @sites = (sites + extra_sites).sort_by(&:abbr)
@@ -18,7 +18,7 @@ class OrganisationsController < ApplicationController
   end
 
   def create
-    @organisation = Organisation.create(organisation_params.merge(content_id: SecureRandom.uuid))
+    @organisation = Organisation.create!(organisation_params.merge(content_id: SecureRandom.uuid))
     if @organisation.valid?
       redirect_to action: :show, id: @organisation.whitehall_slug
     else
@@ -37,11 +37,13 @@ class OrganisationsController < ApplicationController
     end
   end
 
-  private def set_organisation
+private
+
+  def set_organisation
     @organisation = Organisation.find_by_whitehall_slug!(params[:id])
   end
 
-  private def organisation_params
+  def organisation_params
     params[:organisation].permit \
       :title,
       :homepage,

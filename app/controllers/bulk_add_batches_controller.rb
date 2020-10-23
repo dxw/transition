@@ -1,4 +1,5 @@
-require 'view/mappings/canonical_filter'
+require "view/mappings/canonical_filter"
+require "transition/off_site_redirect_checker"
 
 class BulkAddBatchesController < ApplicationController
   include PaperTrail::Rails::Controller
@@ -10,22 +11,24 @@ class BulkAddBatchesController < ApplicationController
   before_action :find_batch, only: %i[preview import]
 
   def new
-    paths = params[:paths].present? ? params[:paths].split(',') : []
+    paths = params[:paths].present? ? params[:paths].split(",") : []
     @batch = BulkAddBatch.new(paths: paths)
   end
 
   def create
-    @batch = BulkAddBatch.new(type:     batch_params[:type],
-                              new_url:  batch_params[:new_url],
-                              tag_list: batch_params[:tag_list],
-                              paths:    batch_params[:paths].split(/\r?\n|\r/).map(&:strip))
+    @batch = BulkAddBatch.new(
+      type: batch_params[:type],
+      new_url: batch_params[:new_url],
+      tag_list: batch_params[:tag_list],
+      paths: batch_params[:paths].split(/\r?\n|\r/).map(&:strip),
+    )
     @batch.user = current_user
     @batch.site = @site
 
     if @batch.save
       redirect_to preview_site_bulk_add_batch_path(@site, @batch, return_path: params[:return_path])
     else
-      render action: 'new'
+      render action: "new"
     end
   end
 
@@ -34,8 +37,8 @@ class BulkAddBatchesController < ApplicationController
   end
 
   def import
-    if @batch.state == 'unqueued'
-      @batch.update_attributes!(batch_params.merge(state: 'queued'))
+    if @batch.state == "unqueued"
+      @batch.update!(batch_params.merge(state: "queued"))
 
       if @batch.entries_to_process.count > 20
         MappingsBatchWorker.perform_async(@batch.id)
@@ -65,15 +68,17 @@ private
   end
 
   def batch_params
-    params.permit(:type,
-                  :paths,
-                  :new_url,
-                  :tag_list,
-                  :update_existing)
+    params.permit(
+      :type,
+      :paths,
+      :new_url,
+      :tag_list,
+      :update_existing,
+    )
   end
 
   def find_site
-    @site = Site.find_by_abbr!(params[:site_id])
+    @site = Site.find_by!(abbr: params[:site_id])
   end
 
   def find_batch

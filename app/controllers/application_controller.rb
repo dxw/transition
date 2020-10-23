@@ -1,10 +1,7 @@
 class ApplicationController < ActionController::Base
   before_action :exclude_all_users_except_admins_during_maintenance
   before_action :authenticate
-
-  private def authenticate
-    warden.authenticate!
-  end
+  before_action :set_paper_trail_whodunnit
 
   helper_method :current_user
   def current_user
@@ -21,8 +18,10 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :null_session
 
   rescue_from ActionController::InvalidAuthenticityToken do
-    render_error(403,
-                 body: "Invalid authenticity token")
+    render_error(
+      403,
+      body: "Invalid authenticity token",
+    )
   end
 
   def user_for_paper_trail
@@ -36,10 +35,14 @@ class ApplicationController < ActionController::Base
   def render_error(status, options = {})
     @custom_header = options[:header]
     @custom_body = options[:body]
-    render "errors/error_#{status}", status: status, layout: 'error_page'
+    render "errors/error_#{status}", status: status, layout: "error_page"
   end
 
 private
+
+  def authenticate
+    warden.authenticate!
+  end
 
   def verify_authenticity_token
     raise ActionController::InvalidAuthenticityToken unless verified_request?

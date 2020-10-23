@@ -1,8 +1,8 @@
 class RemoveFakeOrganisations < ActiveRecord::Migration
-  class Site < ActiveRecord::Base
+  class Site < ApplicationRecord
   end
 
-  class Organisation < ActiveRecord::Base
+  class Organisation < ApplicationRecord
     has_many :sites
   end
 

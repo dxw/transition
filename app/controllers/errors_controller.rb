@@ -1,5 +1,4 @@
-#encoding: utf-8
-
+# rubocop:disable Rails/ApplicationController
 class ErrorsController < ActionController::Base
   layout "error_page"
 
@@ -32,8 +31,8 @@ private
   def json_error(message)
     {
       _response_info: {
-        status: 'error',
-        message: message
+        status: "error",
+        message: message,
       },
     }
   end
@@ -46,3 +45,4 @@ private
     end
   end
 end
+# rubocop:enable Rails/ApplicationController

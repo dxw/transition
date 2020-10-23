@@ -13,7 +13,7 @@ class UnauthenticatedController < ActionController::Metal
 
   def respond
     unless request.get?
-      message = env['warden.options'].fetch(:message, "unauthorized.user")
+      message = env["warden.options"].fetch(:message, "unauthorized.user")
       flash.alert = I18n.t(message)
     end
     redirect_to root_path

@@ -1,14 +1,10 @@
-#Use this file to set/override Jasmine configuration options
-#You can remove it if you don't need it.
-#This file is loaded *after* jasmine.yml is interpreted.
-#
-#Example: using a different boot file.
-#Jasmine.configure do |config|
-#   config.boot_dir = '/absolute/path/to/boot_dir'
-#   config.boot_files = lambda { ['/absolute/path/to/boot_dir/file.js'] }
-#end
-#
-#Example: prevent PhantomJS auto install, uses PhantomJS already on your path.
-Jasmine.configure do |config|
-  config.prevent_phantom_js_auto_install = true
+require "jasmine_selenium_runner/configure_jasmine"
+
+class HeadlessChromeJasmineConfigurer < JasmineSeleniumRunner::ConfigureJasmine
+  def selenium_options
+    args = %w[no-sandbox disable-dev-shm-usage disable-gpu]
+    options = Selenium::WebDriver::Chrome::Options.new(args: args)
+    options.headless!
+    { options: options }
+  end
 end

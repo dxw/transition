@@ -8,7 +8,7 @@ class NilUser
   end
 
   def name
-    'Anonymous'
+    "Anonymous"
   end
 
   def admin?

@@ -1,4 +1,4 @@
-require 'view/mappings/canonical_filter'
+require "view/mappings/canonical_filter"
 
 module View
   module Mappings
@@ -22,7 +22,7 @@ module View
       end
 
       def path_contains
-        @path_contains ||= View::Mappings::canonical_filter(site, params[:path_contains])
+        @path_contains ||= View::Mappings.canonical_filter(site, params[:path_contains])
       end
 
       def new_url_contains
@@ -50,7 +50,7 @@ module View
       end
 
       def incompatible?
-        %w(archive unresolved).include?(params[:type]) && new_url_contains.present?
+        %w[archive unresolved].include?(params[:type]) && new_url_contains.present?
       end
 
       def query
@@ -58,7 +58,7 @@ module View
       end
 
       def sort_by_hits?
-        params[:sort] == 'by_hits'
+        params[:sort] == "by_hits"
       end
 
       def tags
@@ -74,14 +74,14 @@ module View
           .includes(:site)
           .includes(taggings: :tag)
 
-        mappings = mappings.redirects   if type == 'redirect'
-        mappings = mappings.archives    if type == 'archive'
-        mappings = mappings.unresolved  if type == 'unresolved'
+        mappings = mappings.redirects   if type == "redirect"
+        mappings = mappings.archives    if type == "archive"
+        mappings = mappings.unresolved  if type == "unresolved"
         mappings = mappings.filtered_by_path(path_contains) if path_contains.present?
         mappings = mappings.redirects.filtered_by_new_url(new_url_contains) if new_url_contains.present?
         mappings = mappings.tagged_with(tagged) if tagged.present?
 
-        mappings.order(sort_by_hits? ? 'mappings.hit_count DESC NULLS LAST' : 'mappings.path')
+        mappings.order(sort_by_hits? ? "mappings.hit_count DESC NULLS LAST" : "mappings.path")
       end
 
       ##
@@ -129,7 +129,7 @@ module View
         end
 
         def sort_by_hits
-          params.except(:page).merge(sort: 'by_hits')
+          params.except(:page).merge(sort: "by_hits")
         end
       end
     end

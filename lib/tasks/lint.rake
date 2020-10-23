@@ -1,6 +1,4 @@
-desc "Run govuk-lint with similar params to CI"
-task :lint do
-  next if ENV['JENKINS']
-
-  sh "bundle exec govuk-lint-ruby --diff --format clang app spec lib"
+desc "Run RuboCop"
+task lint: :environment do
+  sh "bundle exec rubocop --format clang"
 end

@@ -1,10 +1,10 @@
-require 'services'
-require 'transition/import/hits'
-require 'transition/import/iis_access_log_parser'
+require "services"
+require "transition/import/hits"
+require "transition/import/iis_access_log_parser"
 
 class IngestW3cLogWorker
   include Sidekiq::Worker
-  sidekiq_options retry: false, queue: 'ingest'
+  sidekiq_options retry: false, queue: "ingest"
 
   def perform(bucket)
     puts "Ingesting IIS W3C logs from: #{bucket}" unless Rails.env.test?
@@ -23,9 +23,9 @@ class IngestW3cLogWorker
         end
 
         begin
-          tempfile = Tempfile.new('ingest')
+          tempfile = Tempfile.new("ingest")
           ::Services.s3.get_object(
-            bucket: bucket, key: object.key, response_target: tempfile.path
+            bucket: bucket, key: object.key, response_target: tempfile.path,
           )
           Transition::Import::Hits.from_iis_w3c!(tempfile.path)
         ensure
@@ -38,6 +38,6 @@ class IngestW3cLogWorker
       end
     end
 
-    puts 'Finished ingesting' unless Rails.env.test?
+    puts "Finished ingesting" unless Rails.env.test?
   end
 end

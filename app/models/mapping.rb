@@ -1,7 +1,7 @@
-require 'transition/history'
+require "transition/history"
 
-class Mapping < ActiveRecord::Base
-  include Concerns::NilifyBlanks
+class Mapping < ApplicationRecord
+  include NilifyBlanks
 
   # ActiveRecord uses a column named 'type' for Single Table Inheritance, and
   # by default activates STI if a 'type' column is present. Setting the column
@@ -9,7 +9,7 @@ class Mapping < ActiveRecord::Base
   # something else instead, without activating STI.
   self.inheritance_column = nil
 
-  SUPPORTED_TYPES = %w(redirect archive unresolved).freeze
+  SUPPORTED_TYPES = %w[redirect archive unresolved].freeze
 
   acts_as_taggable
   has_paper_trail
@@ -20,10 +20,10 @@ class Mapping < ActiveRecord::Base
   validates :site, presence: true
   validates :path,
             length: { maximum: 2048 },
-            exclusion: { in: ['/'], message: I18n.t('mappings.not_possible_to_edit_homepage_mapping') },
+            exclusion: { in: ["/"], message: I18n.t("mappings.not_possible_to_edit_homepage_mapping") },
             is_path: true
   validates :type, presence: true, inclusion: { in: SUPPORTED_TYPES }
-  validates :path, uniqueness: { scope: [:site_id], message: 'Mapping already exists for this site and path!' }
+  validates :path, uniqueness: { scope: [:site_id], message: "Mapping already exists for this site and path!" }
 
   before_validation :trim_scheme_host_and_port_from_path, :fill_in_scheme, :canonicalize_path
 
@@ -32,62 +32,65 @@ class Mapping < ActiveRecord::Base
   after_create :update_hit_relations
 
   validates :new_url, :suggested_url, :archive_url, length: { maximum: 2048 }, non_blank_url: true
-  validates :new_url, presence: { if: :redirect?, message: 'is required' }
+  validates :new_url, presence: { if: :redirect?, message: "is required" }
   validates :new_url, host_in_whitelist: { if: :redirect? }
-  validates :new_url, not_a_national_archives_url: { if: :redirect?, message: 'must not be to the National Archives. Use an archive mapping for that.' }
+  validates :new_url, not_a_national_archives_url: { if: :redirect?, message: "must not be to the National Archives. Use an archive mapping for that." }
   validates :archive_url, national_archives_url: true
 
-  scope :with_hit_count, -> {
-    select('mappings.*, SUM(hits.count) as hit_count').
-      joins('LEFT JOIN hits ON hits.mapping_id = mappings.id').
-      group('mappings.id')
-  }
+  scope :with_hit_count,
+        lambda {
+          select("mappings.*, SUM(hits.count) as hit_count")
+            .joins("LEFT JOIN hits ON hits.mapping_id = mappings.id")
+            .group("mappings.id")
+        }
   scope :with_type, ->(type) { where(type: type) }
-  scope :redirects, -> { with_type('redirect') }
-  scope :archives,  -> { with_type('archive') }
-  scope :unresolved, -> { with_type('unresolved') }
-  scope :filtered_by_path, ->(term) do
-    where(Mapping.arel_table[:path].matches("%#{term}%")).references(:mapping) if term.present?
-  end
-  scope :filtered_by_new_url, ->(term) do
-    where(Mapping.arel_table[:new_url].matches("%#{term}%")).references(:mapping) if term.present?
-  end
+  scope :redirects, -> { with_type("redirect") }
+  scope :archives,  -> { with_type("archive") }
+  scope :unresolved, -> { with_type("unresolved") }
+  scope :filtered_by_path,
+        lambda { |term|
+          where(Mapping.arel_table[:path].matches("%#{term}%")).references(:mapping) if term.present?
+        }
+  scope :filtered_by_new_url,
+        lambda { |term|
+          where(Mapping.arel_table[:new_url].matches("%#{term}%")).references(:mapping) if term.present?
+        }
 
   def redirect?
-    type == 'redirect'
+    type == "redirect"
   end
 
   def archive?
-    type == 'archive'
+    type == "archive"
   end
 
   def unresolved?
-    type == 'unresolved'
+    type == "unresolved"
   end
 
   ##
   # Return the occasional bit-part attribute +hit_count+ as a number.
   # Preserve the possible +nil+ value.
   def hit_count
-    read_attribute(:hit_count) && read_attribute(:hit_count).to_i
+    self[:hit_count] && self[:hit_count].to_i
   end
 
   ##
   # Reconstruct old URL based on path and default site hostname
   def old_url
-    "http://#{self.site.default_host.hostname}#{self.path}"
+    "http://#{site.default_host.hostname}#{path}"
   end
 
   ##
   # Generate national archive index URL
   def national_archive_index_url
-    "http://webarchive.nationalarchives.gov.uk/*/#{self.old_url}"
+    "http://webarchive.nationalarchives.gov.uk/*/#{old_url}"
   end
 
   ##
   # Generate national archive URL
   def national_archive_url
-    "http://webarchive.nationalarchives.gov.uk/#{self.tna_timestamp}/#{self.old_url}"
+    "http://webarchive.nationalarchives.gov.uk/#{tna_timestamp}/#{old_url}"
   end
 
   def edited_by_human?
@@ -112,7 +115,7 @@ class Mapping < ActiveRecord::Base
     # This will return nil if the mapping was imported from redirector and has
     # not been edited since.
     if versions.present? && versions.last.user_id.present?
-      User.find_by_id(versions.last.user_id)
+      User.find_by(id: versions.last.user_id)
     end
   end
 
@@ -127,9 +130,9 @@ class Mapping < ActiveRecord::Base
     if uri.blank? || uri =~ %r{^https?:}
       uri
     elsif %r{^www.gov.uk}.match?(uri)
-      'https://' + uri
+      "https://" + uri
     else
-      'http://' + uri
+      "http://" + uri
     end
   end
 
@@ -163,11 +166,11 @@ protected
     #   '/' is a homepage path and not valid for a mapping
     #   a path that doesn't start with a '/' isn't a valid path
     # full validation still needs to be run on the path
-    not(path == '/' || path =~ /^[^\/]/)
+    !((path == "/" || path =~ /^[^\/]/))
   end
 
   def tna_timestamp
-    self.site.tna_timestamp.to_formatted_s(:number)
+    site.tna_timestamp.to_formatted_s(:number)
   end
 
   def ensure_papertrail_user_config
@@ -178,9 +181,9 @@ protected
     host_paths = site.host_paths.where(canonical_path: path)
     new_hits_paths = host_paths.pluck(:path)
 
-    site.hits.where(path: new_hits_paths).update_all(mapping_id: self.id)
-    host_paths.update_all(mapping_id: self.id)
+    site.hits.where(path: new_hits_paths).update_all(mapping_id: id)
+    host_paths.update_all(mapping_id: id)
 
-    self.update_column(:hit_count, hits.sum('count'))
+    update_column(:hit_count, hits.sum("count"))
   end
 end
