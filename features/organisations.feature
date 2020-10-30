@@ -17,7 +17,7 @@ Feature: List organisations
 
   Scenario: Visit the list page
     When I visit the home page
-    Then I should see "@example.com"
+    Then I should see my email
     And I should see the header "Organisations"
     And I should see an organisations table with 4 rows
     And I should see a link to the organisation bis

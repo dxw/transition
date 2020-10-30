@@ -1,8 +1,8 @@
 include Warden::Test::Helpers
 
 Given(/^I have logged in as a GDS Editor$/) do
-  user = create(:gds_editor)
-  login_as(user)
+  @user = create(:gds_editor)
+  login_as(@user)
 end
 
 Given(/^I have logged in as an admin$/) do
@@ -35,4 +35,8 @@ end
 Given(/^I have logged in as a member of another organisation$/) do
   user = create(:user, organisation_content_id: SecureRandom.uuid)
   login_as(user)
+end
+
+Given(/^I should see my email$/) do
+  expect(page).to have_content(@user.email)
 end
