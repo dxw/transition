@@ -30,6 +30,12 @@
     <%= link_to 'Glossary', glossary_index_path %>
   </li>
 <% end %>
+<% content_for :navbar_right do %>
+  <%- if current_user.respond_to?(:email) %>
+    <%= current_user.email %>
+    &bull; <%= link_to 'Sign out', '/auth/gds/sign_out' %>
+  <%- end %>
+<% end %>
 
 <% content_for :favicon do %>
   <% environment_style = GovukAdminTemplate.environment_style %>
