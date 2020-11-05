@@ -9,10 +9,50 @@ module Transition
       end
 
       class Entry < OpenStruct
+        CLOUDFRONT_LOG_FIELDS = {
+          date: "(\\d{4}-\\d{2}-\\d{2})",
+          time: "(\\d{2}:\\d{2}:\\d{2})",
+          "x-edge-location": "(\\w+-?\\w+)",
+          "sc-bytes": "(\\d+)",
+          "c-ip": "(\\S+)",
+          "cs-method": "(\\w+)",
+          "cs(Host)": "(\\S+)",
+          "cs-uri-stem": "(\\S+)",
+          "sc-status": "(\\S+)",
+          "cs(Referer)": "(\\S+)",
+          "cs(User-Agent)": "(\\S+)",
+          "cs-uri-query": "(\\S+)",
+          "cs(Cookie)": "(\\S+)",
+          "x-edge-result-type": "(\\w+)",
+          "x-edge-request-id": "(\\S+)",
+          "x-host-header": "(\\S+)",
+          "cs-protocol": "(\\w+)",
+          "cs-bytes": "(\\d+)",
+          "time-taken": "(\\S+)",
+          "x-forwarded-for": "(\\S+|-)",
+          "ssl-protocol": "(\\S+)",
+          "ssl-cipher": "(\\S+)",
+          "x-edge-response-result-type": "(\\w+)",
+          "cs-protocol-version": "(\\S+)",
+          "fle-status": "(\\S+)",
+          "fle-encrypted-fields": "(\\S+)",
+          "c-port": "(\\S+)",
+          "time-to-first-byte": "(\\S+)",
+          "x-edge-detailed-result-type": "(\\S+)",
+          "sc-content-type": "(\\S+)",
+          "sc-content-len": "(\\S+)",
+          "sc-range-start": "(\\S+)",
+          "sc-range-end": "(\\S+)",
+        }.freeze
+
+        def self.line_regex
+          Regexp.new("^" + CLOUDFRONT_LOG_FIELDS.values.join("\\s") + "$")
+        end
+
         def self.from_string(line)
           mapping = {}
           x = nil
-          line.scrub.split(/^(\d{4}-\d{2}-\d{2})\s(\d{2}:\d{2}:\d{2})\s(\w+-?\w+)\s(\d+)\s(\S+)\s(\w+)\s(\S+)\s(\S+)\s(\d+)\s(\S+)\s(\S+)\s(\S+)\s(\S+)\s(\w+)\s(\S+)\s(\S+)\s(\w+)\s(\d+)\s(\S+)\s(\S+|-)\s(\S+)\s(\S+)\s(\w+)\s(\S+)\s(\S+)\s(\S+)\s(\S+)\s(\S+)\s(\S+)\s(\S+)\s(\S+)\s(\S+)\s(\S+)$/).each_with_index do |value, i|
+          line.scrub.split(line_regex).each_with_index do |value, i|
             next unless CloudfrontAccessLogParser.fields[i - 1]
 
             mapping[CloudfrontAccessLogParser.fields[i - 1]] = value unless i.zero?
