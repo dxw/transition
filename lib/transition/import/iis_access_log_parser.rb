@@ -16,18 +16,33 @@ module Transition
         @fields = fields
       end
 
-      # Fields: date time s-ip cs-method cs-uri-stem cs-uri-query s-port cs-username c-ip cs(User-Agent) cs(Referer) cs-host sc-status sc-substatus sc-win32-status time-taken
-      # Entry = Entry.new
-
       class Entry < OpenStruct
+        IIS_LOG_FIELDS = {
+          date: "(\\d{4}-\\d{2}-\\d{2}[ T]\\d{2}:\\d{2}:\\d{2})",
+          server_ip: "([^ ]*)",
+          method: "([^ ]*)",
+          url: "([^ ]*)",
+          query: "([^ ]*)",
+          port: "([^ ]*)",
+          username: "([^ ]*)",
+          client_ip: "([^ ]*)",
+          user_agent: "([^ ]*)",
+          user_referer: "([^ ]*)",
+          host: "([^ ]*)",
+          status: "([^ ]*)",
+          substatus: "([^ ]*)",
+          win32_status: "([^ ]*)",
+          time_taken: "([^ ]*)",
+        }.freeze
+
+        def self.line_regex
+          Regexp.new("^" + IIS_LOG_FIELDS.values.join("\\s"))
+        end
+
         def self.from_string(line)
-          # 2011-06-20 00:00:00 83.222.242.43 GET /SharedControls/getListingThumbs.aspx img=48,13045,27801,25692,35,21568,21477,21477,10,18,46,8&premium=0|1|0|0|0|0|0|0|0|0|0|0&h=100&w=125&pos=175&scale=true 80 - 92.20.10.104 Mozilla/4.0+(compatible;+MSIE+8.0;+Windows+NT+6.1;+Trident/4.0;+GTB6.6;+SLCC2;+.NET+CLR+2.0.50727;+.NET+CLR+3.5.30729;+.NET+CLR+3.0.30729;+Media+Center+PC+6.0;+aff-kingsoft-ciba;+.NET4.0C;+MASN;+AskTbSTC/5.8.0.12304) - 200 0 0 609
-
-          #      x, date, server_ip, method, url, query, port, username, client_ip, user_agent, user_referer status, substatus, win32_status, time_taken, y, other = *line.match(/^([^ ]* [^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*)($| )(.*)/)
-
           mapping = {}
           x = nil
-          line.scrub.split(/^(\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*)($| )(.*)/).each_with_index do |value, i|
+          line.scrub.split(line_regex).each_with_index do |value, i|
             mapping[IISAccessLogParser.fields[i - 1]] = value unless i.zero?
             x = value if i.zero?
           end
