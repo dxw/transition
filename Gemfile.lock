@@ -73,7 +73,7 @@ GEM
     autoprefixer-rails (10.0.2.0)
       execjs
     aws-eventstream (1.1.0)
-    aws-partitions (1.391.0)
+    aws-partitions (1.392.0)
     aws-sdk-core (3.109.2)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
@@ -134,7 +134,7 @@ GEM
       cucumber-messages (~> 13.0, >= 13.0.1)
     cucumber-html-formatter (9.0.0)
       cucumber-messages (~> 13.0, >= 13.0.1)
-    cucumber-messages (13.1.0)
+    cucumber-messages (13.2.0)
       protobuf-cucumber (~> 3.10, >= 3.10.8)
     cucumber-rails (2.2.0)
       capybara (>= 2.18, < 4)
