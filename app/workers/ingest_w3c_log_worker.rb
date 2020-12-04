@@ -1,6 +1,7 @@
 require "services"
 require "transition/import/hits"
 require "transition/import/iis_access_log_parser"
+require "transition/import/cloudfront_access_log_parser"
 
 class IngestW3cLogWorker
   include Sidekiq::Worker
