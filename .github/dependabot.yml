@@ -4,6 +4,7 @@ updates:
     directory: /
     schedule:
       interval: daily
+    target-branch: develop
     allow:
       # Security updates
       - dependency-name: brakeman
