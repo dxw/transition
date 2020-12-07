@@ -61,7 +61,7 @@ end
 
 group :development, :test do
   gem 'dotenv-rails'
-  gem 'govuk-lint', '~> 3.11.5'
+  gem 'govuk-lint', '~> 4.3.0'
   gem 'jasmine'
   gem 'pry'
   gem 'rspec-collection_matchers'
