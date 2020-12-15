@@ -75,6 +75,9 @@ module Transition
           mapping[:user_agent].tr!("+", " ") unless mapping[:user_agent].nil?
 
           mapping[:user_referer] = mapping[:"cs(Referer)"] unless ["-", nil].include?(mapping[:"cs(Referer)"])
+
+          mapping[:host] = mapping[:"x-host-header"]
+          mapping[:url] = mapping[:"cs-uri-stem"]
           new(mapping)
         end
       end
