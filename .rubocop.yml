@@ -10,7 +10,9 @@ inherit_mode:
 Rails/Output:
   Exclude:
     - app/workers/ingest_w3c_log_worker.rb
+    - app/workers/ingest_cloudfront_log_worker.rb
 
 Lint/AmbiguousBlockAssociation:
   Exclude:
     - spec/workers/ingest_w3c_log_worker_spec.rb
+    - spec/workers/ingest_cloudfront_log_worker_spec.rb

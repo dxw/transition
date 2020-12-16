@@ -29,7 +29,12 @@ if ENV["REDIS_URL"].present?
       "daily_ingest_of_ukri_clf_logs" => {
         "class" => "IngestW3cLogWorker",
         "cron" => "0 19 * * *",
-        "args" => ENV["LOG_BUCKET_NAME"],
+        "args" => ENV["W3C_LOG_BUCKET_NAME"],
+      },
+      "daily_ingest_of_cloudfront_logs" => {
+        "class" => "IngestCloudfrontLogWorker",
+        "cron" => "0 20 * * *",
+        "args" => ENV["CLOUDFRONT_LOG_BUCKET_NAME"],
       },
     },
   )
