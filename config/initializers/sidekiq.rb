@@ -23,6 +23,10 @@ end
 
 Sidekiq.logger.level = Logger::WARN if Rails.env.production?
 
+# If passing multiple buckets in the W3C_LOG_BUCKET_NAME & CLOUDFRONT_LOG_BUCKET_NAME
+# arguments, join them with `,` and they will be split into an array
+# e.g. W3C_LOG_BUCKET_NAME="bucket1,bucket2,bucket3"
+
 if ENV["REDIS_URL"].present?
   Sidekiq::Cron::Job.load_from_hash(
     {

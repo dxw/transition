@@ -9,6 +9,7 @@ describe IngestCloudfrontLogWorker, type: :worker do
 
   describe "perform" do
     let(:bucket) { "bucket-name" }
+    let(:multiple_buckets) { "bucket-1,bucket-2" }
     let(:key) { "path/hits.log" }
     let(:fixture) { "cloudfront_example.log" }
     let(:hash) { "abc123456def" }
@@ -40,6 +41,15 @@ describe IngestCloudfrontLogWorker, type: :worker do
       expect(Transition::Import::DailyHitTotals).to receive(:from_hits!)
       expect(Transition::Import::HitsMappingsRelations).to receive(:refresh!)
       subject.perform(bucket)
+    end
+
+    it "handles multiple bucket names" do
+      Sidekiq::Testing.inline! do
+        expect(s3).to receive(:list_objects).with(bucket: "bucket-1").and_call_original
+        expect(s3).to receive(:list_objects).with(bucket: "bucket-2").and_call_original
+
+        subject.perform(multiple_buckets)
+      end
     end
   end
 end

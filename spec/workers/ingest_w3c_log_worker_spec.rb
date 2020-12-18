@@ -9,6 +9,7 @@ describe IngestW3cLogWorker, type: :worker do
 
   describe "perform" do
     let(:bucket) { "bucket-name" }
+    let(:multiple_buckets) { "bucket-1,bucket-2" }
     let(:key) { "path/hits.log" }
     let(:fixture) { "iis_w3c_example.log" }
     let(:hash) { "abc123456def" }
@@ -23,6 +24,15 @@ describe IngestW3cLogWorker, type: :worker do
         expect(s3).to receive(:list_objects).with(bucket: bucket).and_call_original
         expect(s3).to receive(:get_object).with(bucket: bucket, key: key, response_target: /ingest/).and_call_original
         subject.perform(bucket)
+      end
+    end
+
+    it "handles multiple bucket names" do
+      Sidekiq::Testing.inline! do
+        expect(s3).to receive(:list_objects).with(bucket: "bucket-1").and_call_original
+        expect(s3).to receive(:list_objects).with(bucket: "bucket-2").and_call_original
+
+        subject.perform(multiple_buckets)
       end
     end
 
