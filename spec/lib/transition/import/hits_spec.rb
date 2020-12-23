@@ -266,6 +266,23 @@ describe Transition::Import::Hits do
     end
   end
 
+  describe ".from_cloudfront!" do
+    context "when there is a host that matches the IP address" do
+      it "imports the data" do
+        host = create :host, hostname: "www.judiciary.uk"
+
+        Transition::Import::Hits.from_cloudfront!("spec/fixtures/hits/cloudfront_example.log")
+
+        expect(Hit.count).to eql(2)
+        hit = Hit.first
+        expect(hit.path).to eql("/announcements/circuit-judge-appointment-beard/")
+        expect(hit.count).to eql(1)
+        expect(hit.hit_on).to eql(Date.new(2020, 5, 29))
+        expect(hit.host_id).to eql(host.id)
+      end
+    end
+  end
+
   describe ".from_s3!" do
     let(:bucket) { "bucket" }
     let(:s3) { Aws::S3::Client.new(stub_responses: true) }

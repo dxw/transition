@@ -40,4 +40,10 @@ namespace :import do
     bucket = args[:bucket]
     IngestW3cLogWorker.new.perform(bucket)
   end
+
+  desc "Import hits from S3 files in Cloudfront log format"
+  task :from_cloudfront_files, [:bucket] => :environment do |_, args|
+    bucket = args[:bucket]
+    IngestCloudfrontLogWorker.new.perform(bucket)
+  end
 end

@@ -1,6 +1,6 @@
 require "./spec/spec_helper"
 
-describe IngestW3cLogWorker, type: :worker do
+describe IngestCloudfrontLogWorker, type: :worker do
   let(:s3) { Aws::S3::Client.new(stub_responses: true) }
 
   before do
@@ -11,7 +11,7 @@ describe IngestW3cLogWorker, type: :worker do
     let(:bucket) { "bucket-name" }
     let(:multiple_buckets) { "bucket-1,bucket-2" }
     let(:key) { "path/hits.log" }
-    let(:fixture) { "iis_w3c_example.log" }
+    let(:fixture) { "cloudfront_example.log" }
     let(:hash) { "abc123456def" }
 
     before(:each) do
@@ -27,17 +27,8 @@ describe IngestW3cLogWorker, type: :worker do
       end
     end
 
-    it "handles multiple bucket names" do
-      Sidekiq::Testing.inline! do
-        expect(s3).to receive(:list_objects).with(bucket: "bucket-1").and_call_original
-        expect(s3).to receive(:list_objects).with(bucket: "bucket-2").and_call_original
-
-        subject.perform(multiple_buckets)
-      end
-    end
-
     it "asks the import service to ingest the file" do
-      expect(Transition::Import::Hits).to receive(:from_iis_w3c!)
+      expect(Transition::Import::Hits).to receive(:from_cloudfront!)
       subject.perform(bucket)
     end
 
@@ -52,16 +43,12 @@ describe IngestW3cLogWorker, type: :worker do
       subject.perform(bucket)
     end
 
-    context "when that file has already been ingested" do
-      it "does not ingest those logs again" do
-        # Ingest logs
-        expect {
-          subject.perform(bucket)
-        }.to change { ImportedHitsFile.count }
-        # Ingest logs once again, total shouldn't change
-        expect {
-          subject.perform(bucket)
-        }.not_to change { ImportedHitsFile.count }
+    it "handles multiple bucket names" do
+      Sidekiq::Testing.inline! do
+        expect(s3).to receive(:list_objects).with(bucket: "bucket-1").and_call_original
+        expect(s3).to receive(:list_objects).with(bucket: "bucket-2").and_call_original
+
+        subject.perform(multiple_buckets)
       end
     end
   end

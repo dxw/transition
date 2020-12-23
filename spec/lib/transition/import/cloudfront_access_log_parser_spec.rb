@@ -55,6 +55,14 @@ describe Transition::Import::CloudfrontAccessLogParser::Entry do
     expect(line.user_referrer).to be_nil
   end
 
+  it "should contain the original host" do
+    expect(line.host).to eq("www.judiciary.uk")
+  end
+
+  it "should contain the url" do
+    expect(line.url).to eq("/wp-cron.php")
+  end
+
   it "should handle strings containing invalid UTF-8 bytes" do
     line_with_invalid_char = described_class.from_string("2020-05-29	23:54:02	DUB2-C1	618	54.195.247.25	GET	d12s8p8qcafwkr.cloudfront.net	/wp-cron.php	200	-	Wget/1.19.4%20(linux-gnu)	/news?q=char\xE4	-	Miss	b2_BwCohclTL3enMv28Y88rRVmftK2D5Y6W-FL75T_fp-6yzbeavmg==	www.judiciary.uk	https	154	0.147	-	TLSv1.2	ECDHE-RSA-AES128-GCM-SHA256	Miss	HTTP/1.1	-	-	48838	0.146	Miss	text/html;%20charset=UTF-8	0	-	-")
     expect(line_with_invalid_char.query).to eq "/news?q=char\uFFFD"

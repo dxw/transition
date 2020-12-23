@@ -1,5 +1,6 @@
 require "pathname"
 require "services"
+require "csv"
 require "transition/import/console_job_wrapper"
 require "transition/import/postgresql_settings"
 require "transition/import/hits/ignore"
@@ -128,7 +129,23 @@ module Transition
       end
 
       def self.from_iis_w3c!(filename)
-        parsed_log_lines = parse_iis_w3c_log_file(filename: filename)
+        parsed_log_lines = parse_log_file(filename: filename, log_type: :iis)
+
+        # Create a temporary CSV file from the parsed CLF log lines
+        new_csv_filename = "data/temp_clf_conversion.csv"
+        ::CSV.open(new_csv_filename, "wb", force_quotes: true) do |csv|
+          csv << %w[date count status host url]
+          parsed_log_lines.each do |parsed_log_line|
+            csv << parsed_log_line
+          end
+        end
+
+        # Send to the existing ingest process
+        from_file!(LOAD_CSV_DATA, new_csv_filename)
+      end
+
+      def self.from_cloudfront!(filename)
+        parsed_log_lines = parse_log_file(filename: filename, log_type: :cloudfront)
 
         # Create a temporary CSV file from the parsed CLF log lines
         new_csv_filename = "data/temp_clf_conversion.csv"
@@ -161,13 +178,17 @@ module Transition
         done
       end
 
-      def self.parse_iis_w3c_log_file(filename:)
+      def self.parse_log_file(filename:, log_type: :iis)
         absolute_filename = File.expand_path(filename, Rails.root)
 
         parsed_log_lines = []
         File.open(absolute_filename, "r") do |file|
           file.each_line do |combined_log_line|
-            log = IISAccessLogParser::Entry.from_string(combined_log_line)
+            log = if log_type == :iis
+                    IISAccessLogParser::Entry.from_string(combined_log_line)
+                  elsif log_type == :cloudfront
+                    CloudfrontAccessLogParser::Entry.from_string(combined_log_line)
+                  end
 
             parsed_log_line = [
               log.date&.to_date&.to_s,
