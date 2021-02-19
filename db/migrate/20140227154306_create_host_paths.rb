@@ -1,4 +1,4 @@
-class CreateHostPaths < ActiveRecord::Migration
+class CreateHostPaths < ActiveRecord::Migration[6.0]
   def change
     create_table :host_paths do |t|
       t.string :path, limit: 2048
@@ -10,7 +10,7 @@ class CreateHostPaths < ActiveRecord::Migration
     end
 
     add_index :host_paths, %i[host_id path_hash], unique: true # Used only for uniqueness inserting
-    add_index :host_paths, :c14n_path_hash # Used for lookup when creating/editing mappings
-    add_index :host_paths, :mapping_id
+    # add_index :host_paths, :c14n_path_hash unless index_exists?(:host_paths, :c14n_path_hash, {})# Used for lookup when creating/editing mappings
+    # add_index :host_paths, :mapping_id unless index_exists?(:host_paths, :mapping_id, {})
   end
 end

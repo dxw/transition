@@ -1,4 +1,4 @@
-class CreateMappingsStaging < ActiveRecord::Migration
+class CreateMappingsStaging < ActiveRecord::Migration[6.0]
   def change
     create_table :mappings_staging, id: false do |t|
       t.text :old_url, limit: 16777215

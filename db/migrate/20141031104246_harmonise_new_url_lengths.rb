@@ -1,4 +1,4 @@
-class HarmoniseNewURLLengths < ActiveRecord::Migration
+class HarmoniseNewURLLengths < ActiveRecord::Migration[6.0]
   def up
     change_column :mappings_batches, :new_url, :string, limit: 2048
     change_column :mappings_batch_entries, :new_url, :string, limit: 2048

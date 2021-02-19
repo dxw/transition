@@ -1,4 +1,4 @@
-class ChangeColumnTypesOnMappingsBatchEntries < ActiveRecord::Migration
+class ChangeColumnTypesOnMappingsBatchEntries < ActiveRecord::Migration[6.0]
   def up
     change_column :mappings_batch_entries, :new_url, :text
     change_column :mappings_batch_entries, :archive_url, :text

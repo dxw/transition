@@ -1,4 +1,4 @@
-class CreateOrganisationsSites < ActiveRecord::Migration
+class CreateOrganisationsSites < ActiveRecord::Migration[6.0]
   def change
     create_table :organisations_sites, id: false do |t|
       t.references :site, null: false

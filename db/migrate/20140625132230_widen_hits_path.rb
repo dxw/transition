@@ -1,4 +1,4 @@
-class WidenHitsPath < ActiveRecord::Migration
+class WidenHitsPath < ActiveRecord::Migration[6.0]
   def up
     change_column :hits_staging, :path, :text
     change_column :hits, :path, :string, limit: 2048

@@ -1,4 +1,4 @@
-class SetTypeFromHTTPStatus < ActiveRecord::Migration
+class SetTypeFromHTTPStatus < ActiveRecord::Migration[6.0]
   SET_MAPPING_TYPE_FROM_HTTP_STATUS = <<-mySQL.freeze
     UPDATE mappings
     SET    type = (CASE http_status

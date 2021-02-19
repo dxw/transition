@@ -3,7 +3,7 @@
 # * change the unique host path index on `host_id` and `path_hash` for one on
 #   `host_id` and `path`
 # * drop NOT NULL constraints on all `path_hash` fields
-class StopUsingPathHash < ActiveRecord::Migration
+class StopUsingPathHash < ActiveRecord::Migration[6.0]
   def up
     remove_index :host_paths, column: %i[host_id path_hash]
     add_index :host_paths, %i[host_id path], unique: true

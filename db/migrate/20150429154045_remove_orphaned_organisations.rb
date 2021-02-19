@@ -1,4 +1,4 @@
-class RemoveOrphanedOrganisations < ActiveRecord::Migration
+class RemoveOrphanedOrganisations < ActiveRecord::Migration[6.0]
   class Site < ApplicationRecord
     belongs_to :organisation
   end
@@ -20,7 +20,7 @@ class RemoveOrphanedOrganisations < ActiveRecord::Migration
     end
 
     change_column_null :organisations, :content_id, false
-    add_index :organisations, :content_id, unique: true
+    # add_index :organisations, :content_id, unique: true
   end
 
   def down

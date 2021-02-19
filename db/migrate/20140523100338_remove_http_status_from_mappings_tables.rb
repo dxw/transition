@@ -1,4 +1,4 @@
-class RemoveHTTPStatusFromMappingsTables < ActiveRecord::Migration
+class RemoveHTTPStatusFromMappingsTables < ActiveRecord::Migration[6.0]
   def up
     remove_index :mappings, %i[site_id http_status]
 

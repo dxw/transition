@@ -1,4 +1,4 @@
-class RemoveGlobalHTTPStatusColumn < ActiveRecord::Migration
+class RemoveGlobalHTTPStatusColumn < ActiveRecord::Migration[6.0]
   def up
     remove_column :sites, :global_http_status
   end

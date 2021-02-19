@@ -1,4 +1,4 @@
-class SetGlobalTypeFromGlobalHTTPStatus < ActiveRecord::Migration
+class SetGlobalTypeFromGlobalHTTPStatus < ActiveRecord::Migration[6.0]
   SET_GLOBAL_TYPE_FROM_GLOBAL_HTTP_STATUS = <<-mySQL.freeze
     UPDATE sites
     SET    global_type = (CASE global_http_status

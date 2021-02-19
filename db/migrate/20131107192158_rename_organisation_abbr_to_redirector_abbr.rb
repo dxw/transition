@@ -1,4 +1,4 @@
-class RenameOrganisationAbbrToRedirectorAbbr < ActiveRecord::Migration
+class RenameOrganisationAbbrToRedirectorAbbr < ActiveRecord::Migration[6.0]
   def up
     rename_column :organisations, :abbr, :redirector_abbr
   end

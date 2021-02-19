@@ -1,4 +1,4 @@
-class CreateWhitelistedHosts < ActiveRecord::Migration
+class CreateWhitelistedHosts < ActiveRecord::Migration[6.0]
   def change
     create_table "whitelisted_hosts", force: true do |t|
       t.string   "hostname", null: false

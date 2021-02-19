@@ -1,4 +1,4 @@
-class FixCollationWoes < ActiveRecord::Migration
+class FixCollationWoes < ActiveRecord::Migration[6.0]
   def up
     # This migration fixed some collation inconsistencies for MySQL, but has
     # been emptied on switching to PostgreSQL. The file remains so that we don't

@@ -1,4 +1,4 @@
-class CreateHitsStaging < ActiveRecord::Migration
+class CreateHitsStaging < ActiveRecord::Migration[6.0]
   def change
     # no indices, constraints or timestamps - this is meant to be fast
     create_table :hits_staging, id: false do |t|

@@ -1,4 +1,4 @@
-class AddTypeToMappingsTables < ActiveRecord::Migration
+class AddTypeToMappingsTables < ActiveRecord::Migration[6.0]
   def change
     add_column :mappings,         :type, :string, null: false
     add_column :mappings_staging, :type, :string

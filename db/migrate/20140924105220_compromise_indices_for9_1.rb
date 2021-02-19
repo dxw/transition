@@ -9,7 +9,7 @@
 # On the plus side it will speed the viewing of hits (particularly for
 # summary/category) up by 100-200%
 #
-class CompromiseIndicesFor91 < ActiveRecord::Migration
+class CompromiseIndicesFor91 < ActiveRecord::Migration[6.0]
   # A couple of helpers to avoid us having to say everything twice
   def remove_index_if_exists(table, *args)
     remove_index(table, *args) if index_exists?(table, *args)

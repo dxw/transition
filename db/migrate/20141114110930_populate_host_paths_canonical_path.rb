@@ -1,4 +1,4 @@
-class PopulateHostPathsCanonicalPath < ActiveRecord::Migration
+class PopulateHostPathsCanonicalPath < ActiveRecord::Migration[6.0]
   include ActionView::Helpers::DateHelper
 
   def up

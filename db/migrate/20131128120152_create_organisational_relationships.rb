@@ -1,4 +1,4 @@
-class CreateOrganisationalRelationships < ActiveRecord::Migration
+class CreateOrganisationalRelationships < ActiveRecord::Migration[6.0]
   def change
     create_table :organisational_relationships do |t|
       t.integer :parent_organisation_id

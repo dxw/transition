@@ -1,4 +1,4 @@
-class CreateHits < ActiveRecord::Migration
+class CreateHits < ActiveRecord::Migration[6.0]
   def change
     create_table :hits do |t|
       t.references :host, null: false
@@ -12,7 +12,7 @@ class CreateHits < ActiveRecord::Migration
     end
 
     add_index :hits, %i[host_id path_hash hit_on http_status], unique: true
-    add_index :hits, [:host_id]
+    # add_index :hits, [:host_id] unless index_exists?(:hits, :host_id, {})
     add_index :hits, %i[host_id hit_on]
     add_index :hits, %i[host_id http_status]
   end

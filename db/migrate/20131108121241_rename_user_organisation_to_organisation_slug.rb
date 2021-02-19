@@ -1,4 +1,4 @@
-class RenameUserOrganisationToOrganisationSlug < ActiveRecord::Migration
+class RenameUserOrganisationToOrganisationSlug < ActiveRecord::Migration[6.0]
   def up
     rename_column :users, :organisation, :organisation_slug
   end

@@ -1,4 +1,4 @@
-class DropPgcrypto < ActiveRecord::Migration
+class DropPgcrypto < ActiveRecord::Migration[6.0]
   def up
 #    disable_extension 'pgcrypto'
   end

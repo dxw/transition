@@ -1,4 +1,4 @@
-class DropMappingsStaging < ActiveRecord::Migration
+class DropMappingsStaging < ActiveRecord::Migration[6.0]
   def up
     drop_table :mappings_staging
   end

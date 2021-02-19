@@ -1,4 +1,4 @@
-class HarmonisePathLengths < ActiveRecord::Migration
+class HarmonisePathLengths < ActiveRecord::Migration[6.0]
   def up
     change_column :mappings, :path, :string, limit: 2048
   end

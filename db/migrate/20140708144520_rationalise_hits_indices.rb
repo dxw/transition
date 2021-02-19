@@ -1,4 +1,4 @@
-class RationaliseHitsIndices < ActiveRecord::Migration
+class RationaliseHitsIndices < ActiveRecord::Migration[6.0]
   # A couple of helpers to avoid us having to say everything twice
   def remove_index_if_exists(table, *args)
     remove_index(table, *args) if index_exists?(table, *args)

@@ -1,4 +1,4 @@
-class CreateMappingsBatchTables < ActiveRecord::Migration
+class CreateMappingsBatchTables < ActiveRecord::Migration[6.0]
   def change
     create_table :mappings_batches do |t|
       t.string :tag_list
@@ -16,6 +16,6 @@ class CreateMappingsBatchTables < ActiveRecord::Migration
       t.references :mappings_batch
       t.references :mapping
     end
-    add_index :mappings_batch_entries, :mappings_batch_id
+    # add_index :mappings_batch_entries, :mappings_batch_id unless index_exists?(:mappings_batch_entries, :mappings_batch_id, {})
   end
 end

@@ -1,4 +1,4 @@
-class CreateAllStillusefulTables < ActiveRecord::Migration
+class CreateAllStillusefulTables < ActiveRecord::Migration[6.0]
   def change
     create_table "hosts", force: true do |t|
       t.integer  "site_id"

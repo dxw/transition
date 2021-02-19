@@ -1,4 +1,4 @@
-class RemoveIndividualNhsukDomainsFromWhitelist < ActiveRecord::Migration
+class RemoveIndividualNhsukDomainsFromWhitelist < ActiveRecord::Migration[6.0]
   def up
     WhitelistedHost.where("hostname LIKE '%.nhs.uk'").each(&:destroy)
   end

@@ -1,4 +1,4 @@
-class MoveRedirectionDateToSite < ActiveRecord::Migration
+class MoveRedirectionDateToSite < ActiveRecord::Migration[6.0]
   class Organisation < ApplicationRecord
   end
 

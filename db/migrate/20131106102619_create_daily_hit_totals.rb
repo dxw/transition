@@ -1,4 +1,4 @@
-class CreateDailyHitTotals < ActiveRecord::Migration
+class CreateDailyHitTotals < ActiveRecord::Migration[6.0]
   def change
     create_table :daily_hit_totals do |t|
       t.references :host, null: false

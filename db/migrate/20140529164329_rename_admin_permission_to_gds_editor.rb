@@ -1,4 +1,4 @@
-class RenameAdminPermissionToGdsEditor < ActiveRecord::Migration
+class RenameAdminPermissionToGdsEditor < ActiveRecord::Migration[6.0]
   class User < ApplicationRecord
     serialize :permissions, Array
   end

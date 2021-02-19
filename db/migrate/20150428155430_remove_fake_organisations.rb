@@ -1,4 +1,4 @@
-class RemoveFakeOrganisations < ActiveRecord::Migration
+class RemoveFakeOrganisations < ActiveRecord::Migration[6.0]
   class Site < ApplicationRecord
   end
 

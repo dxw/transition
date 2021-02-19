@@ -1,4 +1,4 @@
-class AddPostgresCrypto < ActiveRecord::Migration
+class AddPostgresCrypto < ActiveRecord::Migration[6.0]
   def up
 #    enable_extension 'pgcrypto'
   end

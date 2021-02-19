@@ -1,4 +1,4 @@
-class AddMissingNotNullableConstraints < ActiveRecord::Migration
+class AddMissingNotNullableConstraints < ActiveRecord::Migration[6.0]
   def up
     # Changes to match the constraints defined in the models.
     # This might make a difference where we import without using the models or
