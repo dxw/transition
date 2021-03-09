@@ -3,7 +3,7 @@ source "https://rubygems.org"
 gem "rails", "6.0.3.5"
 
 gem "activerecord-import"
-gem "activerecord-session_store"
+gem "activerecord-session_store", github: "rails-lts/activerecord-session_store", branch: "secure-session-store"
 gem "acts-as-taggable-on"
 gem "apache_log-parser"
 gem "aws-sdk-s3"
