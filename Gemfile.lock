@@ -194,7 +194,7 @@ GEM
     fugit (1.4.2)
       et-orbi (~> 1.1, >= 1.1.8)
       raabro (~> 1.4)
-    gds-api-adapters (71.1.0)
+    gds-api-adapters (71.3.0)
       addressable
       link_header
       null_logger
@@ -259,7 +259,7 @@ GEM
     hashie (4.1.0)
     htmlentities (4.3.4)
     http-accept (1.7.0)
-    http-cookie (1.0.3)
+    http-cookie (1.0.4)
       domain_name (~> 0.5)
     httpclient (2.8.3)
     i18n (1.8.10)
